@@ -1,0 +1,4 @@
+[core]
+    remote = localstore
+['remote "localstore"']
+    url = /home/nik/Documents/Nikita/linux/InnopolisUniversity/Sum24/MLops/repo/datastore

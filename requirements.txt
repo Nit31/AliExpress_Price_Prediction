@@ -1,5 +1,6 @@
 numpy
 pandas
+matplotlib
 hydra-core
 google-auth
 google-auth-oauthlib

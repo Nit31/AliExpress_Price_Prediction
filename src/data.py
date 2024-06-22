@@ -32,7 +32,7 @@ def sample_data(cfg: DictConfig = None):
     df = pd.read_csv(f'{cfg.db.kaggle_filename}_csv.csv')
 
     # Remove temporary file
-    os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
+    # os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
     os.remove(f'{cfg.db.kaggle_filename}_json.json')
     # os.remove(f'{cfg.db.db_name}.zip')
 
@@ -42,3 +42,4 @@ def sample_data(cfg: DictConfig = None):
     df_sample = df_sortes[(len(df_sortes) // 5) * (number_of_sample - 1):(len(df_sortes) // 5) * (number_of_sample)]
     df_sample.to_csv(cfg.db.sample_path)
     pass
+sample_data()

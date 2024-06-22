@@ -2,9 +2,7 @@ numpy
 pandas
 matplotlib
 hydra-core
-google-auth
-google-auth-oauthlib
-google-auth-httplib2
-google-api-python-client
 omegaconf
+dvc
+kaggle
 scikit-learn

@@ -1,0 +1,7 @@
+db:
+  url: null
+  sample_part: 1
+  dataset_name: aliexpress
+  google_credentials_path: ../configs/credentials.json
+  file_id: 1Evyk0ujpGt3YdU52maIKp8ORH7OPRNTI
+  sample_path: ../data/sample.csv

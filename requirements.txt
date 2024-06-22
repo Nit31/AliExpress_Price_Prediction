@@ -6,3 +6,6 @@ omegaconf
 dvc
 kaggle
 scikit-learn
+torch
+transformers
+tqdm

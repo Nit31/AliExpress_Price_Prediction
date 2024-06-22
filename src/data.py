@@ -32,10 +32,9 @@ def sample_data(cfg: DictConfig = None):
     df = pd.read_csv(f'{cfg.db.kaggle_filename}_csv.csv')
 
     # Remove temporary file
-    # os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
+    os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
     os.remove(f'{cfg.db.kaggle_filename}_json.json')
-    # os.remove(f'{cfg.db.db_name}.zip')
-
+    
     # Number of sample part that we need(can be changed in config/main.yaml)
     number_of_sample = cfg.db.sample_part
     df_sortes = df.sort_values(by=['lunchTime'])

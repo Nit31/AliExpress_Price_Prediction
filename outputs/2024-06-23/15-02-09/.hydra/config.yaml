@@ -1,6 +1,0 @@
-db:
-  db_creator: abdullahbuzaid
-  db_name: ali-express-data
-  sample_part: 1
-  sample_path: ./data/samples/sample.csv
-  kaggle_filename: raw

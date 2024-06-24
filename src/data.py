@@ -3,10 +3,14 @@ import pandas as pd
 import hydra
 from omegaconf import DictConfig, OmegaConf
 import yaml
+import great_expectations as gx
+from great_expectations.data_context import FileDataContext
+import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
+
 
 @hydra.main(version_base=None, config_path="../configs", config_name="main")
 def sample_data(cfg: DictConfig = None):
-
     with open("configs/confidential.yaml", "r") as stream:
         config_confidential_data = yaml.safe_load(stream)
 
@@ -48,6 +52,139 @@ def sample_data(cfg: DictConfig = None):
         print('Number of the sample should be < that 6 and > 0')
         exit(0)
     df_sample = df_sortes[(len(df_sortes) // 5) * (number_of_sample - 1):(len(df_sortes) // 5) * (number_of_sample)]
-    # df_sample.to_csv(cfg.db.sample_path)
-    pass
-sample_data()
+    df_sample.to_csv(cfg.db.sample_path)
+
+
+def handle_initial_data():
+    df = pd.read_csv("data/samples/sample.csv")
+    df = df.drop_duplicates(['id'])
+
+    def clean_sold(sold_data: str) -> int:
+        try:
+            sold_count, _ = str.split(sold_data)
+        except ValueError:
+            sold_count = sold_data
+        return int(sold_count)
+
+    df['sold'] = df['sold'].apply(clean_sold)
+    df.to_csv("data/samples/sample.csv", index=False)
+
+
+def validate_initial_data():
+    # Create or open a data context
+    try:
+        context = gx.get_context(context_root_dir = "services/gx")
+    except Exception as e:
+        context = FileDataContext(context_root_dir = "services/gx")
+
+    # Add data source and data asset
+    data_source = context.sources.add_or_update_pandas(name="sample")
+    data_asset = data_source.add_csv_asset(
+        name = "sample1",
+        filepath_or_buffer="data/samples/sample.csv"
+    )
+
+    # Create batch request
+    batch_request = data_asset.build_batch_request()
+
+    # Create expectation suit
+    context.add_or_update_expectation_suite("expectation_suite")
+
+    # Verify that the expectation is created
+    # context.list_expectation_suite_names()
+
+    # Create a validator
+    validator = context.get_validator(
+        batch_request=batch_request,
+        expectation_suite_name="expectation_suite",
+    )
+    try:
+        # Add expectations on the validator
+
+        # Completeness & Uniqueness & Validity
+        validator.expect_column_values_to_not_be_null(column='id')
+        validator.expect_column_values_to_be_unique(column='id')
+        validator.expect_column_values_to_be_of_type(column='id', type_='int')
+
+        # Completeness & Consistency & Validity
+        validator.expect_column_values_to_not_be_null(column='title')
+        validator.expect_column_values_to_be_of_type(column='title', type_='str')
+        validator.expect_column_proportion_of_unique_values_to_be_between(
+            column="title",
+            min_value=0.7,
+            max_value=1
+        )
+
+        # Completeness & Validity & Timelessness
+        validator.expect_column_values_to_not_be_null(column='lunchTime')
+        validator.expect_column_values_to_match_regex_list(
+            column='lunchTime',
+            regex_list=[r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$', r'^(200[0-9]|201[0-9]|202[0-4])-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$']
+        )
+
+        # Completeness & Consistency & Accuracy
+        validator.expect_column_values_to_not_be_null(column='sold')
+        validator.expect_column_values_to_be_in_type_list(column='sold', type_list=['int'])
+        validator.expect_column_min_to_be_between(column='sold', min_value=0)
+
+        # Completeness & Consistency & Accuracy
+        validator.expect_column_values_to_not_be_null(column='rating')
+        validator.expect_column_values_to_be_of_type(column='rating', type_='float64')
+        validator.expect_column_values_to_be_between(column='rating', min_value=0, max_value=5)
+
+        # Completeness & Consistency & Accuracy
+        validator.expect_column_values_to_not_be_null(column='discount')
+        validator.expect_column_values_to_be_of_type(column='discount', type_='int')
+        validator.expect_column_values_to_be_between(column='discount', min_value=0, max_value=100)
+
+        # Completeness & Consistency & Consistency
+        validator.expect_column_values_to_not_be_null(column='type')
+        validator.expect_column_values_to_be_of_type(column='type', type_='str')
+        validator.expect_column_distinct_values_to_equal_set(column='type', value_set=['ad', 'natural'])
+
+        # Save expectation suite
+        validator.save_expectation_suite(
+            discard_failed_expectations = False
+        )
+
+        batch_list = data_asset.get_batch_list_from_batch_request(batch_request)
+
+        validations = [
+            {
+                "batch_request": batch.batch_request,
+                "expectation_suite_name": "expectation_suite"
+            }
+            for batch in batch_list
+        ]
+        checkpoint = context.add_or_update_checkpoint(
+            name="validator_checkpoint",
+            validations=validations
+        )
+
+        checkpoint_result = checkpoint.run()
+    except Exception as e:
+        print(e)
+        return False
+
+    # Build the data docs (website files)
+    # context.build_data_docs()
+
+    # Open the data docs in a browser
+    # context.open_data_docs()
+
+    return checkpoint_result.success
+
+
+def test_data():
+    # take a sample
+    sample_data()
+    # validate the sample
+    try:
+        # if the validation failed, then try to handle the initial data
+        assert validate_initial_data()
+    except Exception as e:
+        handle_initial_data()
+    assert validate_initial_data()
+
+    print('Data is valid.')
+    # if data is okay, then version it

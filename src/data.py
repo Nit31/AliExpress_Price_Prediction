@@ -70,11 +70,10 @@ def sample_data(cfg: DictConfig = None) -> None:
 
 
 def handle_initial_data():
-    """This function...
-    
-    Returns:
-        _type_: _description_
     """
+    This function cleans the raw data.
+    """
+    
     df = pd.read_csv("data/samples/sample.csv")
     df = df.drop_duplicates(['id'])
 

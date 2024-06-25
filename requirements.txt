@@ -1,2 +1,13 @@
 numpy
 pandas
+matplotlib
+hydra-core
+omegaconf
+dvc
+kaggle
+scikit-learn
+torch
+transformers
+tqdm
+pytest
+great_expectations

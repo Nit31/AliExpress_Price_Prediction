@@ -5,8 +5,8 @@ This folder contains shell scripts that automate key tasks related to data manag
 ## Script Descriptions:
 
 * *`install_requirements.sh`:*  Installs all the necessary dependencies for the project. This script is usually the first one to run when setting up the project environment.
-* *`sample_data.sh`:*  Samples data from the original data source. This script is responsible for creating the sample datasets used in the project.
-* *`test_data.sh`:* Runs data validation checks on the sampled data to ensure its integrity and quality.
+* *`test_data.sh`:* Sample data from initial source. Runs data validation checks on the sampled data to ensure its integrity and quality.
+And version the sample using DVC.
 
 ## Usage:
 

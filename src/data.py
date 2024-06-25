@@ -6,10 +6,10 @@ import yaml
 import great_expectations as gx
 from great_expectations.data_context import FileDataContext
 import warnings
+warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
-@hydra.main(version_base=None, config_path="../configs", config_name="main")
-def sample_data(cfg: DictConfig = None) -> None:
+def sample_data(cfg):
     """This function download data from initial sourse(in this case Kaggle)
         using API. Then this function sample data by dividing initial raw
         data on 5 equal part regarding time feature. After all resulted
@@ -69,12 +69,12 @@ def sample_data(cfg: DictConfig = None) -> None:
     df_sample.to_csv(cfg.db.sample_path)
 
 
-def handle_initial_data():
+def handle_initial_data(cfg):
     """
     This function cleans the raw data.
     """
-    
-    df = pd.read_csv("data/samples/sample.csv")
+
+    df = pd.read_csv(cfg.db.sample_path)
     df = df.drop_duplicates(['id'])
 
     def clean_sold(sold_data: str) -> int:
@@ -85,10 +85,10 @@ def handle_initial_data():
         return int(sold_count)
 
     df['sold'] = df['sold'].apply(clean_sold)
-    df.to_csv("data/samples/sample.csv", index=False)
+    df.to_csv(cfg.db.sample_path, index=False)
 
 
-def validate_initial_data():
+def validate_initial_data(cfg):
     """This function declares expectations about the data features and validates them.
     Returns:
         result (bool): Status of data validation.
@@ -103,7 +103,7 @@ def validate_initial_data():
     data_source = context.sources.add_or_update_pandas(name="sample")
     data_asset = data_source.add_csv_asset(
         name = "sample1",
-        filepath_or_buffer="data/samples/sample.csv"
+        filepath_or_buffer=cfg.db.sample_path
     )
 
     # Create batch request
@@ -194,18 +194,18 @@ def validate_initial_data():
 
     return checkpoint_result.success
 
-
-def test_data():
+@hydra.main(version_base=None, config_path="../configs", config_name="main")
+def test_data(cfg: DictConfig = None):
     """This function creates a data sample and validates it.
     """
     # take a sample
-    sample_data()
+    sample_data(cfg)
     # validate the sample
     try:
         # if the validation failed, then try to handle the initial data
-        assert validate_initial_data()
+        assert validate_initial_data(cfg)
     except Exception as e:
-        handle_initial_data()
-    assert validate_initial_data()
+        handle_initial_data(cfg)
+    assert validate_initial_data(cfg)
 
     print('Data is valid.')

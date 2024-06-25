@@ -9,11 +9,14 @@ This folder contains Jupyter notebooks for the project. Each notebook explores a
     * Exploratory data analysis (EDA) relevant to business questions.
     * Visualizations of the data. 
 * *`data_understanding.ipynb`:* This notebook provides a more technical exploration of the data. It may cover:
-    * Feature engineering. 
+    * Feature engineering.
+    * EDA.
     * In-depth statistical analysis.
-* *`EDA.ipynb`:* This notebook is dedicated to comprehensive Exploratory Data Analysis (EDA), aiming to uncover patterns, relationships, and anomalies in the dataset.  
+    * POC.
 
 ## Running the Notebooks
 
-Ensure you have the required libraries installed. You can typically find the dependencies in a separate `requirements.txt` file.
+Ensure you have the required libraries installed.
+Install requirements by running `./scripts/install_requirements.sh` from the project directory.
+You can typically find the dependencies in a separate `requirements.txt` file.
 

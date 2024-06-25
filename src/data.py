@@ -6,11 +6,17 @@ import yaml
 import great_expectations as gx
 from great_expectations.data_context import FileDataContext
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
 
 
 @hydra.main(version_base=None, config_path="../configs", config_name="main")
-def sample_data(cfg: DictConfig = None):
+def sample_data(cfg: DictConfig = None) -> None:
+    """This function download data from initial sourse(in this case Kaggle)
+        using API. Then this function sample data by dividing initial raw
+        data on 5 equal part regarding time feature. After all resulted
+        sample saved in the data/samples/sample.csv
+    Args:
+        cfg (DictConfig, optional): _description_. Defaults to None.
+    """
     with open("configs/confidential.yaml", "r") as stream:
         config_confidential_data = yaml.safe_load(stream)
 
@@ -19,11 +25,16 @@ def sample_data(cfg: DictConfig = None):
     os.environ['KAGGLE_USERNAME'] = kaggle_data['kaggle_username']
     os.environ['KAGGLE_KEY'] = kaggle_data['kaggle_key']
 
-    # We need to import API library after setting up environmental variables 
+    # We need to import API library after setting up environmental variables
+    # if the order will be changed, API will not work properly
     from kaggle.api.kaggle_api_extended import KaggleApi
 
     def download_kaggle_dataset(dataset_name, output_dir):
-
+        """Function to download Kaggle dataset using API
+        Args:
+            dataset_name (_type_): _description_
+            output_dir (_type_): _description_
+        """
         api = KaggleApi()
         api.authenticate()  # Make sure to set up your Kaggle API authentication as mentioned in the previous messages
 
@@ -59,6 +70,11 @@ def sample_data(cfg: DictConfig = None):
 
 
 def handle_initial_data():
+    """This function...
+    
+    Returns:
+        _type_: _description_
+    """
     df = pd.read_csv("data/samples/sample.csv")
     df = df.drop_duplicates(['id'])
 
@@ -74,6 +90,11 @@ def handle_initial_data():
 
 
 def validate_initial_data():
+    """This function...
+
+    Returns:
+        _type_: _description_
+    """
     # Create or open a data context
     try:
         context = gx.get_context(context_root_dir = "services/gx")
@@ -93,8 +114,6 @@ def validate_initial_data():
     # Create expectation suit
     context.add_or_update_expectation_suite("expectation_suite")
 
-    # Verify that the expectation is created
-    # context.list_expectation_suite_names()
 
     # Create a validator
     validator = context.get_validator(
@@ -179,6 +198,8 @@ def validate_initial_data():
 
 
 def test_data():
+    """This function...
+    """
     # take a sample
     sample_data()
     # validate the sample

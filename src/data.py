@@ -51,6 +51,9 @@ def sample_data(cfg: DictConfig = None):
     if number_of_sample not in [1, 2, 3, 4, 5]:
         print('Number of the sample should be < that 6 and > 0')
         exit(0)
+    if number_of_sample not in [1, 2, 3, 4, 5]:
+        print('Number of the sample should be < that 6 and > 0')
+        exit(0)
     df_sample = df_sortes[(len(df_sortes) // 5) * (number_of_sample - 1):(len(df_sortes) // 5) * (number_of_sample)]
     df_sample.to_csv(cfg.db.sample_path)
 

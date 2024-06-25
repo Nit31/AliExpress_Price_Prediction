@@ -1,0 +1,1 @@
+python -c 'from src.data import *; sample_data()'

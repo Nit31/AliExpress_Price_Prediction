@@ -90,10 +90,9 @@ def handle_initial_data():
 
 
 def validate_initial_data():
-    """This function...
-
+    """This function declares expectations about the data features and validates them.
     Returns:
-        _type_: _description_
+        result (bool): Status of data validation.
     """
     # Create or open a data context
     try:
@@ -198,7 +197,7 @@ def validate_initial_data():
 
 
 def test_data():
-    """This function...
+    """This function creates a data sample and validates it.
     """
     # take a sample
     sample_data()
@@ -211,4 +210,3 @@ def test_data():
     assert validate_initial_data()
 
     print('Data is valid.')
-    # if data is okay, then version it

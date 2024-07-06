@@ -6,8 +6,19 @@ omegaconf
 dvc
 kaggle
 scikit-learn
-torch
-transformers
+# torch
+# transformers
 tqdm
 pytest
 great_expectations
+# zenml[server]
+# apache-airflow
+# feast
+# pendulum
+# shyaml
+# mlflow
+# giskard
+# evidently
+# Flask
+# flask-session2
+# psycopg2-binary

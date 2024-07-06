@@ -165,3 +165,7 @@ def test_data(cfg: DictConfig = None):
     assert validate_initial_data(cfg)
 
     print('Data is valid.')
+
+
+if __name__ == '__main__':
+    test_data()

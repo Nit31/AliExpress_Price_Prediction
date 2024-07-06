@@ -11,6 +11,9 @@ transformers
 tqdm
 pytest
 great_expectations
+graphviz
+kubernetes
+apache-airflow
 # zenml[server]
 # apache-airflow
 # feast

@@ -1,5 +1,1 @@
-# Ignore all files
-*
-
-# Allow .gitignore
-!.gitignore
+/uncommitted

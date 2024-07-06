@@ -11,16 +11,19 @@ transformers
 tqdm
 pytest
 great_expectations
-# Apache Airflow
+
+# Apache Airflow & zenml
 graphviz
 kubernetes
-apache-airflow
+apache-airflow==2.7.3
+flask-appbuilder
+pydantic
 apache-airflow-providers-cncf-kubernetes
 psycopg2
 virtualenv
+zenml[server]==0.58.2
+Flask-Session==0.5.0
 
-
-# zenml[server]
 # feast
 # pendulum
 # shyaml

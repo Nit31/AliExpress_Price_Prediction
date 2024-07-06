@@ -6,8 +6,8 @@ omegaconf
 dvc
 kaggle
 scikit-learn
-# torch
-# transformers
+torch
+transformers
 tqdm
 pytest
 great_expectations

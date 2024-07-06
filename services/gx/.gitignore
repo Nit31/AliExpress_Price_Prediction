@@ -3,3 +3,5 @@
 
 # Allow .gitignore
 !.gitignore
+
+uncommitted/

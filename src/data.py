@@ -6,8 +6,6 @@ import yaml
 import great_expectations as gx
 from great_expectations.data_context import FileDataContext
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
-
 
 def sample_data(cfg):
     """This function download data from initial sourse(in this case Kaggle)
@@ -109,8 +107,8 @@ def validate_initial_data(cfg):
     # Create batch request
     batch_request = data_asset.build_batch_request()
 
-    # Create expectation suit
-    context.add_or_update_expectation_suite("expectation_suite")
+    # Get an existing expectation suit
+    context.get_expectation_suite("expectation_suite")
 
 
     # Create a validator
@@ -119,55 +117,9 @@ def validate_initial_data(cfg):
         expectation_suite_name="expectation_suite",
     )
     try:
-        # Add expectations on the validator
-
-        # Completeness & Uniqueness & Validity
-        validator.expect_column_values_to_not_be_null(column='id')
-        validator.expect_column_values_to_be_unique(column='id')
-        validator.expect_column_values_to_be_of_type(column='id', type_='int')
-
-        # Completeness & Consistency & Validity
-        validator.expect_column_values_to_not_be_null(column='title')
-        validator.expect_column_values_to_be_of_type(column='title', type_='str')
-        validator.expect_column_proportion_of_unique_values_to_be_between(
-            column="title",
-            min_value=0.7,
-            max_value=1
-        )
-
-        # Completeness & Validity & Timelessness
-        validator.expect_column_values_to_not_be_null(column='lunchTime')
-        validator.expect_column_values_to_match_regex_list(
-            column='lunchTime',
-            regex_list=[r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$', r'^(200[0-9]|201[0-9]|202[0-4])-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$']
-        )
-
-        # Completeness & Consistency & Accuracy
-        validator.expect_column_values_to_not_be_null(column='sold')
-        validator.expect_column_values_to_be_in_type_list(column='sold', type_list=['int'])
-        validator.expect_column_min_to_be_between(column='sold', min_value=0)
-
-        # Completeness & Consistency & Accuracy
-        validator.expect_column_values_to_not_be_null(column='rating')
-        validator.expect_column_values_to_be_of_type(column='rating', type_='float64')
-        validator.expect_column_values_to_be_between(column='rating', min_value=0, max_value=5)
-
-        # Completeness & Consistency & Accuracy
-        validator.expect_column_values_to_not_be_null(column='discount')
-        validator.expect_column_values_to_be_of_type(column='discount', type_='int')
-        validator.expect_column_values_to_be_between(column='discount', min_value=0, max_value=100)
-
-        # Completeness & Consistency & Consistency
-        validator.expect_column_values_to_not_be_null(column='type')
-        validator.expect_column_values_to_be_of_type(column='type', type_='str')
-        validator.expect_column_distinct_values_to_equal_set(column='type', value_set=['ad', 'natural'])
-
-        # Save expectation suite
-        validator.save_expectation_suite(
-            discard_failed_expectations = False
-        )
-
         batch_list = data_asset.get_batch_list_from_batch_request(batch_request)
+
+        validator.load_batch_list(batch_list)
 
         validations = [
             {
@@ -196,8 +148,12 @@ def validate_initial_data(cfg):
 
 @hydra.main(version_base=None, config_path="../configs", config_name="main")
 def test_data(cfg: DictConfig = None):
-    """This function creates a data sample and validates it.
     """
+    This function creates a data sample and validates it.
+    """
+
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+
     # take a sample
     sample_data(cfg)
     # validate the sample

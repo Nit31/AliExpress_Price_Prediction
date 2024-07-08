@@ -30,6 +30,4 @@ Flask-Session==0.5.0
 # mlflow
 # giskard
 # evidently
-# Flask
-# flask-session2
 # psycopg2-binary

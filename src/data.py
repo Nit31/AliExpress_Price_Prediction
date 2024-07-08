@@ -1,4 +1,6 @@
 import os
+from datetime import datetime
+
 import pandas as pd
 import hydra
 from omegaconf import DictConfig, OmegaConf
@@ -130,7 +132,9 @@ def handle_initial_data(cfg):
         except ValueError:
             sold_count = sold_data
         return int(sold_count)
-
+    df['shippingCost'] = df['shippingCost'].replace('None', None)
+    mean_shipping_cost = df['shippingCost'].astype(float).mean()
+    df['shippingCost'] = df.fillna({'shippingCost': mean_shipping_cost}, inplace=True)
     df['sold'] = df['sold'].apply(clean_sold)
     df.to_csv(cfg.db.sample_path, index=False)
 
@@ -140,6 +144,7 @@ def validate_initial_data(cfg):
     Returns:
         result (bool): Status of data validation.
     """
+    os.environ['HYDRA_FULL_ERROR'] = '1'
     # Create or open a data context
     try:
         context = gx.get_context(context_root_dir = "services/gx")
@@ -192,7 +197,6 @@ def validate_initial_data(cfg):
 
     # Open the data docs in a browser
     # context.open_data_docs()
-
     return checkpoint_result.success
 
 @hydra.main(version_base=None, config_path="../configs", config_name="main")
@@ -218,12 +222,18 @@ def test_data(cfg: DictConfig = None):
 
 def read_datastore():
     df = pd.read_csv("data/samples/sample.csv")
-    version = 'v.1'
+    with open("configs/data_version.yaml", "r") as stream:
+        config_version_data = yaml.safe_load(stream)
+    version = config_version_data['version']
     return df, version
 
 
 def preprocess_data(df: pd.DataFrame):
     X = df.drop('price', axis=1)
+    X['year'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').year)
+    X['month'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').month)
+    X['day'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').day)
+    X = X.drop(columns=['lunchTime'])
     X = X[['title', 'rating', 'sold', 'discount', 'shippingCost', 'year', 'month', 'category_name', 'type']]
     y = df['price']
     numerical_features = ['rating', 'sold', 'discount', 'shippingCost']
@@ -251,7 +261,7 @@ def preprocess_data(df: pd.DataFrame):
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor)
     ])
-    X_transformed = pipeline.fit_transform(X)
+    X_transformed = pipeline.fit_transform(X).toarray()
     num_features_names = numerical_features
     cat_features_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(categorical_features)
     all_feature_names = list(num_features_names) + list(cat_features_names)

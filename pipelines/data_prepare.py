@@ -3,7 +3,13 @@ from typing_extensions import Tuple, Annotated
 from zenml import step, pipeline, ArtifactConfig
 #from data import transform_data, extract_data, load_features, validate_transformed_data
 #from utils import get_sample_version
+import sys
+import os
+
+# Add the parent directory of 'src' to the Python path
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import data
+
 import os
 
 BASE_PATH = os.path.expandvars("$PROJECTPATH")
@@ -78,4 +84,5 @@ def prepare_data_pipeline():
 
 
 if __name__ == "__main__":
+
     run = prepare_data_pipeline()

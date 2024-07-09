@@ -135,7 +135,7 @@ with DAG(
     )
 
     load_sample_to_data_store_task = PythonOperator(
-        task_id='version_validated_sample_task',
+        task_id='load_sample_to_data_store_task',
         python_callable=load_sample_to_data_store,
         provide_context=True,
     )

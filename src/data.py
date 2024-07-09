@@ -338,6 +338,9 @@ def test_data(cfg: DictConfig = None):
     
     assert validate_initial_data(cfg, sample)
 
+    # If the data is validated, then save it
+    sample.to_csv(cfg.db.sample_path)
+
     print('Data is valid.')
 
 if __name__ == '__main__':

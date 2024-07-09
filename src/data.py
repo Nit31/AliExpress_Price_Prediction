@@ -2,7 +2,7 @@ import os
 from datetime import datetime
 import pandas as pd
 import hydra
-from omegaconf import DictConfig
+from omegaconf import DictConfig, open_dict
 import yaml
 import great_expectations as gx
 from great_expectations.data_context import FileDataContext
@@ -193,11 +193,6 @@ def validate_initial_data(cfg, sample):
         print(e)
         return False
 
-    # Build the data docs (website files)
-    # context.build_data_docs()
-
-    # Open the data docs in a browser
-    # context.open_data_docs()
     return checkpoint_result.success
 
 
@@ -321,8 +316,19 @@ def test_data(cfg: DictConfig = None):
 
     warnings.filterwarnings("ignore", category=DeprecationWarning)
 
+     # Parse data_version
+    with open(cfg.dvc.data_version_yaml_path) as stream:
+        try:
+            data_version = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            raise
+    with open_dict(cfg):
+        cfg.db.sample_part = data_version['version']
+
     # take a sample
     sample = sample_data(cfg)
+
     # validate the sample
     try:
         # if the validation failed, then try to handle the initial data

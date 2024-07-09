@@ -165,3 +165,5 @@ cython_debug/
 
 # .csv files
 *.csv
+
+*.zip

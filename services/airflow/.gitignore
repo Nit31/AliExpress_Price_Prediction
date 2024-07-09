@@ -3,3 +3,4 @@
 !README.md
 !dags/
 !dags/**
+__pycache__/

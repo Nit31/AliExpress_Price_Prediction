@@ -6,14 +6,11 @@ import sys
 import os
 import hydra
 from omegaconf import DictConfig, OmegaConf
-
+from data import sample_data, handle_initial_data, validate_initial_data
 import warnings
 warnings.filterwarnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
-# Append the current working directory to the system path
-sys.path.append(os.getcwd())
-from src.data import sample_data, handle_initial_data, validate_initial_data
 
 # Define the default arguments
 default_args = {
@@ -42,7 +39,7 @@ with DAG(
     description='An automated workflow for data extraction, validation, versioning, and loading',
 ) as dag:
     # Initialize Hydra and load the config
-    hydra.initialize(config_path="../configs", job_name="data_extract_dag")
+    hydra.initialize(config_path="../../../configs", job_name="data_extract_dag")
     cfg = hydra.compose(config_name="main")
 
     # Define a PythonOperator to execute the load_and_execute_sample_data function

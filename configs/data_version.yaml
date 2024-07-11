@@ -1,1 +1,3 @@
-version: 2
+# Version must be in type <str>
+version: '2'
+

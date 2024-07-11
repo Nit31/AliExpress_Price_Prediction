@@ -15,6 +15,7 @@ import torch
 from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 import zenml
+import numpy as np
 
 
 class TextDataset(Dataset):
@@ -114,10 +115,12 @@ def sample_data(cfg):
         os.remove(f'{cfg.db.kaggle_filename}_json.json')
         
     df_sortes = df.sort_values(by=['lunchTime'])
-    if not 1 <= cfg.db.sample_part <= 5:
+    sample_part_int = int(cfg.db.sample_part)
+    if not 1 <= sample_part_int <= 5:
         print('sample_part should be < that 6 and > 0')
         exit(0)
     df_sample = df_sortes[(len(df_sortes) // 5) * (cfg.db.sample_part - 1):(len(df_sortes) // 5) * (cfg.db.sample_part)]
+    #df_sample = df_sortes[(len(df_sortes) // 1000) * (sample_part_int - 1):(len(df_sortes) // 1000) * (sample_part_int)]
     # df_sample.to_csv(cfg.db.sample_path)
     return df_sample
 
@@ -135,9 +138,9 @@ def handle_initial_data(cfg, sample):
         except ValueError:
             sold_count = sold_data
         return int(sold_count)
-    df['shippingCost'] = df['shippingCost'].replace('None', None)
-    mean_shipping_cost = df['shippingCost'].astype(float).mean()
-    df['shippingCost'] = df.fillna({'shippingCost': mean_shipping_cost}, inplace=True)
+    df['shippingCost'] = df['shippingCost'].replace('None', np.nan).astype(float)
+    mean_shipping_cost = df['shippingCost'].mean()
+    df['shippingCost'].fillna(mean_shipping_cost, inplace=True)
     df['sold'] = df['sold'].apply(clean_sold)
 
     return df
@@ -203,7 +206,6 @@ def read_datastore():
     version = config_version_data['version']
     return df, version
 
-
 def preprocess_data(df: pd.DataFrame):
     X = df.drop('price', axis=1)
     X['year'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').year)
@@ -244,6 +246,7 @@ def preprocess_data(df: pd.DataFrame):
     df_transformed = pd.DataFrame(X_transformed, columns=all_feature_names)
     model_name = 'roberta-base'
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    print(device)
     model = RobertaModel.from_pretrained(model_name).to(device)
     model.eval()
     embeddings = generate_embeddings(X['title'], model,device)
@@ -252,7 +255,8 @@ def preprocess_data(df: pd.DataFrame):
     df_transformed = pd.concat([df_transformed,df_titles],axis=1)
     del model
     torch.cuda.empty_cache()
-    return df_transformed, y
+    y_df = pd.DataFrame(y)
+    return df_transformed, y_df
 
 
 def validate_features(X,y):
@@ -264,9 +268,9 @@ def validate_features(X,y):
 
     # Add data source and data asset
     data_source = context.sources.add_or_update_pandas(name="features_sample")
-    data_asset = data_source.add_csv_asset(
-        name = "features_sample",
-        dataframe=pd.concat([X,y],axis=1)
+    data_asset = data_source.add_dataframe_asset(
+        name="features_sample",
+        dataframe=X
     )
 
     # Create batch request
@@ -301,10 +305,14 @@ def validate_features(X,y):
     return checkpoint_result.success
 
 
-def load_features(X,y,version):
-    df = pd.concat([X,y],axis=1)
-    zenml.save_artifact(data = df, name = "features_target", version=version, tags=[version])
-    if zenml.load_artifact(version=version) is None:
+def load_features(X, y, version):
+    df = pd.concat([X, y], axis=1)
+    zenml.save_artifact(data=df, name="features_target", version=version, tags=[version])
+
+    # Specify the name or ID of the artifact you want to load
+    artifact_name_or_id = "features_target"  # Replace with the appropriate name or ID if needed
+
+    if zenml.load_artifact(name_or_id=artifact_name_or_id, version=version) is None:
         raise Exception("Artifact not loaded")
 
 
@@ -335,7 +343,7 @@ def test_data(cfg: DictConfig = None):
         assert validate_initial_data(cfg, sample)
     except Exception:
         sample = handle_initial_data(cfg, sample)
-    
+        #sample.to_csv(cfg.db.sample_path)
     assert validate_initial_data(cfg, sample)
 
     # If the data is validated, then save it

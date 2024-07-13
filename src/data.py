@@ -256,43 +256,59 @@ def preprocess_data(df: pd.DataFrame):
     X = X[list(cfg.features.all)]
     y = df[str(cfg.features.target)]
     numerical_features = list(cfg.features.numerical)
+    try:
+        preprocessor = zenml.load_artifact(name_or_id='preprocessor', version='1')
+    except:
+        preprocessor = None
+    if preprocessor is None:
+        print('Doesn\'t find preprocessor. Creating...')
+        # Define the transformers for numerical and categorical features
+        numerical_transformer = Pipeline(steps=[
+            ('scaler', StandardScaler())  # Standardize numerical features
+        ])
 
-    # Define the transformers for numerical and categorical features
-    numerical_transformer = Pipeline(steps=[
-        ('scaler', StandardScaler())  # Standardize numerical features
-    ])
+        # Encode "type" and "month" via basic OneHot
+        type_transformer = Pipeline(steps=[
+            ('onehot', OneHotEncoder(handle_unknown='ignore'))  # Apply one-hot encoding
+        ])
 
-    # Encode "type" and "month" via basic OneHot
-    type_transformer = Pipeline(steps=[
-        ('onehot', OneHotEncoder(handle_unknown='ignore'))  # Apply one-hot encoding
-    ])
-    
-    month_transformer = Pipeline(steps=[
-        ('mon', OneHotEncoder(handle_unknown='ignore', categories=[[i for i in range(12)]]))
-    ])
-    
-    # Encode "year", "category_name" using Binary encoder with fixed number of columns
-    year_transformer = Pipeline(steps=[
-        ('fb_1', FixedBinsBinaryEncoder(max_bins=6))
-    ])
-    
-    category_name_transformer = Pipeline(steps=[
-        ('fb_2', FixedBinsBinaryEncoder(max_bins=9))
-    ])
-    
+        month_transformer = Pipeline(steps=[
+            ('mon', OneHotEncoder(handle_unknown='ignore', categories=[[i for i in range(12)]]))
+        ])
 
-    # Combine the transformers into a ColumnTransformer
-    preprocessor = ColumnTransformer(
-        transformers=[
-            ('num', numerical_transformer, numerical_features),
-            ('cat', type_transformer, ['type']),
-            ('mon', month_transformer, ['month']),
-            ('fb_year', year_transformer, ['year']),
-            ('fb_cn', category_name_transformer, ['category_name']),
-            # ('text', text_transformer, text_features)
-        ]
-    )
+        # Encode "year", "category_name" using Binary encoder with fixed number of columns
+        year_transformer = Pipeline(steps=[
+            ('fb_1', FixedBinsBinaryEncoder(max_bins=6))
+        ])
 
+        category_name_transformer = Pipeline(steps=[
+            ('fb_2', FixedBinsBinaryEncoder(max_bins=9))
+        ])
+
+
+        # Combine the transformers into a ColumnTransformer
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', numerical_transformer, numerical_features),
+                ('cat', type_transformer, ['type']),
+                ('mon', month_transformer, ['month']),
+                ('fb_year', year_transformer, ['year']),
+                ('fb_cn', category_name_transformer, ['category_name']),
+                # ('text', text_transformer, text_features)
+            ]
+        )
+        zenml.save_artifact(preprocessor,name='preprocessor',version='1')
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    try:
+        roberta_model = zenml.load_artifact(name_or_id='roberta_model', version='1')
+    except:
+        roberta_model = None
+    if roberta_model is None:
+        print('Doesn\'t find roberta. Creating...')
+        model_name = 'roberta-base'
+        roberta_model = RobertaModel.from_pretrained(model_name).to(device)
+        roberta_model.eval()
+        zenml.save_artifact(roberta_model,name='roberta_model',version='1')
     # Create the pipeline with the preprocessor
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor)
@@ -306,18 +322,19 @@ def preprocess_data(df: pd.DataFrame):
     df_transformed = pd.DataFrame(X_transformed, columns=all_feature_names)
     
     # Preprocess text feature
-    model_name = 'roberta-base'
-    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    #model_name = 'roberta-base'
+
     print(device)
-    model = RobertaModel.from_pretrained(model_name).to(device)
-    model.eval()
-    embeddings = generate_embeddings(X['title'], model,device)
+    # model = RobertaModel.from_pretrained(model_name).to(device)
+    # model.eval()
+    embeddings = generate_embeddings(X['title'], roberta_model,device)
     title_feature_name = [f'title_{i}' for i in range(embeddings.shape[1])]
     df_titles = pd.DataFrame(embeddings.numpy(), columns=title_feature_name)
     df_transformed = pd.concat([df_transformed,df_titles],axis=1)
-    del model
+    del roberta_model
     torch.cuda.empty_cache()
     y_df = pd.DataFrame(y)
+    df_transformed.to_csv('test.csv')
     return df_transformed, y_df
 
 

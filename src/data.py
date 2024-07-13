@@ -16,6 +16,8 @@ from torch.utils.data import DataLoader, Dataset
 from tqdm import tqdm
 import zenml
 import numpy as np
+from category_encoders import BinaryEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
 
 
 class TextDataset(Dataset):
@@ -27,7 +29,6 @@ class TextDataset(Dataset):
 
     def __getitem__(self, idx):
         return self.text_series.iloc[idx]
-
 
 def collate_fn(batch):
     tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
@@ -114,14 +115,20 @@ def sample_data(cfg):
         os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
         os.remove(f'{cfg.db.kaggle_filename}_json.json')
         
+    # Take actual sample`s vertion
+    with open(cfg.dvc.data_version_yaml_path) as stream:
+        try:
+            data_version = yaml.safe_load(stream)
+        except yaml.YAMLError as exc:
+            print(exc)
+            raise
+
     df_sortes = df.sort_values(by=['lunchTime'])
-    sample_part_int = int(cfg.db.sample_part)
+    sample_part_int = int(data_version['version'])
     if not 1 <= sample_part_int <= 5:
-        print('sample_part should be < that 6 and > 0')
+        print('Sample_part should be < that 6 and > 0')
         exit(0)
-    df_sample = df_sortes[(len(df_sortes) // 5) * (cfg.db.sample_part - 1):(len(df_sortes) // 5) * (cfg.db.sample_part)]
-    #df_sample = df_sortes[(len(df_sortes) // 1000) * (sample_part_int - 1):(len(df_sortes) // 1000) * (sample_part_int)]
-    # df_sample.to_csv(cfg.db.sample_path)
+    df_sample = df_sortes[(len(df_sortes) // 5) * (sample_part_int - 1):(len(df_sortes) // 5) * (sample_part_int)]
     return df_sample
 
 
@@ -200,37 +207,88 @@ def validate_initial_data(cfg, sample):
 
 
 def read_datastore():
+    
+    # TODO add config with path instad hardcode
+    
     df = pd.read_csv("data/samples/sample.csv")
     with open("configs/data_version.yaml", "r") as stream:
         config_version_data = yaml.safe_load(stream)
     version = config_version_data['version']
     return df, version
 
+# Class for a binary encoder that had fixed columns
+# Its necessary for data validation and decreasing number of columns
+class FixedBinsBinaryEncoder(BaseEstimator, TransformerMixin):
+    def __init__(self, max_bins=6):
+        self.max_bins = max_bins
+        self.encoder = BinaryEncoder()
+    
+    def fit(self, X, y=None):
+        self.encoder.fit(X)
+        return self
+    
+    def transform(self, X):
+        binary_encoded = self.encoder.transform(X)
+        
+        num_columns = binary_encoded.shape[1]
+        
+        if num_columns > self.max_bins:
+            raise ValueError(f"Number of required bits ({num_columns}) exceeds the specified maximum number of bins ({self.max_bins}).")
+        
+        # Padding with zeros if necessary
+        padded_encoded = np.pad(binary_encoded, ((0, 0), (0, self.max_bins - num_columns)), 'constant', constant_values=0)
+        return padded_encoded
+    
+
 def preprocess_data(df: pd.DataFrame):
+    
+    # Adding configuration for preprocessing
+    hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
+    cfg = hydra.compose(config_name="features")
+    
     X = df.drop('price', axis=1)
-    X['year'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').year)
+    
+    # Convert Date to year, month, and day
+    X['year'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').year).astype(str)
     X['month'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').month)
     X['day'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').day)
     X = X.drop(columns=['lunchTime'])
-    X = X[['title', 'rating', 'sold', 'discount', 'shippingCost', 'year', 'month', 'category_name', 'type']]
-    y = df['price']
-    numerical_features = ['rating', 'sold', 'discount', 'shippingCost']
-    categorical_features = ['category_name', 'type', 'year', 'month']
+    X = X[list(cfg.features.all)]
+    y = df[str(cfg.features.target)]
+    numerical_features = list(cfg.features.numerical)
 
     # Define the transformers for numerical and categorical features
     numerical_transformer = Pipeline(steps=[
         ('scaler', StandardScaler())  # Standardize numerical features
     ])
 
-    categorical_transformer = Pipeline(steps=[
+    # Encode "type" and "month" via basic OneHot
+    type_transformer = Pipeline(steps=[
         ('onehot', OneHotEncoder(handle_unknown='ignore'))  # Apply one-hot encoding
     ])
+    
+    month_transformer = Pipeline(steps=[
+        ('mon', OneHotEncoder(handle_unknown='ignore', categories=[[i for i in range(12)]]))
+    ])
+    
+    # Encode "year", "category_name" using Binary encoder with fixed number of columns
+    year_transformer = Pipeline(steps=[
+        ('fb_1', FixedBinsBinaryEncoder(max_bins=6))
+    ])
+    
+    category_name_transformer = Pipeline(steps=[
+        ('fb_2', FixedBinsBinaryEncoder(max_bins=9))
+    ])
+    
 
     # Combine the transformers into a ColumnTransformer
     preprocessor = ColumnTransformer(
         transformers=[
             ('num', numerical_transformer, numerical_features),
-            ('cat', categorical_transformer, categorical_features),
+            ('cat', type_transformer, ['type']),
+            ('mon', month_transformer, ['month']),
+            ('fb_year', year_transformer, ['year']),
+            ('fb_cn', category_name_transformer, ['category_name']),
             # ('text', text_transformer, text_features)
         ]
     )
@@ -239,11 +297,15 @@ def preprocess_data(df: pd.DataFrame):
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor)
     ])
-    X_transformed = pipeline.fit_transform(X).toarray()
+    X_transformed = pipeline.fit_transform(X)
+    
+    # Convert transformed data back to the dataframe
     num_features_names = numerical_features
-    cat_features_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(categorical_features)
-    all_feature_names = list(num_features_names) + list(cat_features_names)
+    type_features_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(['type'])
+    all_feature_names = list(num_features_names) + list(type_features_names) + list([f'month_{i}' for i in range(12)]) + list([f'year_{i}' for i in range(6)]) + list([f'cn_{i}' for i in range(9)])
     df_transformed = pd.DataFrame(X_transformed, columns=all_feature_names)
+    
+    # Preprocess text feature
     model_name = 'roberta-base'
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     print(device)
@@ -301,11 +363,10 @@ def validate_features(X,y):
     )
 
     checkpoint_result = checkpoint.run()
-
     return checkpoint_result.success
 
-
 def load_features(X, y, version):
+    version = str(version)
     df = pd.concat([X, y], axis=1)
     zenml.save_artifact(data=df, name="features_target", version=version, tags=[version])
 

@@ -100,9 +100,9 @@ fluent_datasources:
   sample:
     type: pandas
     assets:
-      sample1:
-        type: csv
-        filepath_or_buffer: ..\data\samples\sample.csv
+      pandas_dataframe:
+        type: dataframe
+        batch_metadata: {}
   features_sample:
     type: pandas
     assets:

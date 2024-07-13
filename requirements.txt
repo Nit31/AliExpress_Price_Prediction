@@ -11,6 +11,7 @@ transformers
 tqdm
 pytest
 great_expectations
+category_encoders
 
 # Apache Airflow & zenml
 graphviz

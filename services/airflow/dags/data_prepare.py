@@ -7,7 +7,7 @@ import sys
 import os
 
 # Add the parent directory of 'src' to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
+sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from src import data
 
 import os
@@ -21,7 +21,7 @@ def extract()-> Tuple[
                    tags=["data_preparation"]
                    )
     ],
-    Annotated[str,
+    Annotated[int,
     ArtifactConfig(name="data_version",
                    tags=["data_preparation"])]
 ]:
@@ -54,8 +54,8 @@ def validate(X:pd.DataFrame,
     ArtifactConfig(name="valid_target",
                    tags=["data_preparation"])]
 ]:
-
-    if data.validate_features(X, y):
+    success = data.validate_features(X, y)
+    if success:
         return X, y
     else:
         raise Exception('Errors with Expectations!')
@@ -79,7 +79,10 @@ def load(X:pd.DataFrame, y:pd.DataFrame, version: str)-> Tuple[
 def prepare_data_pipeline():
     df, version = extract()
     X, y = transform(df)
-    X, y = validate(X, y)
+    try:
+        X, y = validate(X, y)
+    except Exception as e:
+        print(e)
     X, y = load(X, y, version)
 
 

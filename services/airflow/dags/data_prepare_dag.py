@@ -36,7 +36,7 @@ with DAG(
     # Bash task to run the ZenML pipeline
     run_zenml_pipeline = BashOperator(
         task_id='run_zenml_pipeline',
-        bash_command='python /home/nick/Documents/Nikita/linux/InnopolisUniversity/Sum24/MLOps_recovery/services/airflow/dags/data_prepare.py -prepare_data_pipeline ',  # Replace with your ZenML pipeline path
+        bash_command='python $AIRFLOW_HOME/dags/data_prepare.py -prepare_data_pipeline ',  # Replace with your ZenML pipeline path
         retries=1,
         retry_delay=timedelta(seconds=3),  # Adjust retry delay as needed
     )

@@ -1,8 +1,6 @@
 import pandas as pd
 from typing_extensions import Tuple, Annotated
 from zenml import step, pipeline, ArtifactConfig
-#from data import transform_data, extract_data, load_features, validate_transformed_data
-#from utils import get_sample_version
 import sys
 import os
 

@@ -1,0 +1,14 @@
+# python_env.yaml
+
+# Python version required to run the project.
+python: "3.11"
+
+# Dependencies required to build packages. This field is optional.
+build_dependencies:
+  - pip
+
+# Dependencies required to run the project.
+dependencies:
+  - pip:
+      - -r requirements.txt
+  # Add your dependencies here

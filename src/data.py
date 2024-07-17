@@ -247,6 +247,10 @@ def preprocess_data(df: pd.DataFrame):
     hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
     cfg = hydra.compose(config_name="features")
     
+    # FIXME:
+    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
+    df = df[df['storeName'].map(df['storeName'].value_counts()) > 3]
+    
     X = df.drop('price', axis=1)
     
     # Convert Date to year, month, and day

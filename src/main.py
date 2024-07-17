@@ -1,3 +1,4 @@
+import pandas as pd
 import hydra
 import zenml
 import yaml
@@ -16,8 +17,9 @@ def get_split_data(cfg):
     X_train, X_val, y_train, y_val = train_test_split(train_val.drop(columns=['price']), train_val['price'],\
         test_size=cfg.mlflow.val_size, random_state=42)
     
-    # Cut the test data
-    test = test.sample(cfg.mlflow.test_size, random_state=42)
+    # sample out of test data
+    test = pd.DataFrame(test)
+    test = test.sample(frac=cfg.mlflow.test_size, random_state=42)
     
     X_test = test.drop(columns=['price'])
     y_test = test['price']
@@ -27,6 +29,7 @@ def get_split_data(cfg):
 def main(cfg=None):
     # Extract data
     X_train, X_val, X_test, y_train, y_val, y_test = get_split_data(cfg)
+    print(len(X_train), len(X_val), len(X_test))
     # TODO: Train the model
     
     # TODO: Evaluate the model

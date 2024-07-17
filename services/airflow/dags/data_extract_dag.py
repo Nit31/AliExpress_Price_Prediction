@@ -8,7 +8,7 @@ from omegaconf import open_dict
 from data import sample_data, handle_initial_data, validate_initial_data
 import warnings
 import subprocess
-from git import Repo, GitCommandError
+from git import Repo
 warnings.filterwarnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -110,7 +110,7 @@ def load_and_execute_validate_data(**kwargs):
 
 def version_validated_sample(**kwargs):
     # Pull the sample from XCom
-    sample = kwargs['ti'].xcom_pull(key='sample', task_ids='extract_sample_task')
+    sample = kwargs['ti'].xcom_pull(key='sample', task_ids='validate_initial_data_task')
     # Version the validated sample using DVC
     version_data(cfg, sample)
 

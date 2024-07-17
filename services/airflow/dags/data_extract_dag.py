@@ -8,6 +8,7 @@ from omegaconf import open_dict
 from data import sample_data, handle_initial_data, validate_initial_data
 import warnings
 import subprocess
+from git import Repo
 warnings.filterwarnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 
@@ -38,13 +39,31 @@ def version_data(cfg, sample):
         subprocess.run(["dvc", "add", cfg.db.sample_path], check=True)
         subprocess.run(["git", "add", cfg.dvc.sample_info_path], check=True)
         subprocess.run(["git", "add", cfg.dvc.data_version_yaml_path], check=True)
-        # Commit the changes to Git repository.
-        subprocess.run(["git", "commit", "-m", "Versioned sample data"], check=True)
-        # Push the commit to Github.
-        subprocess.run(["git", "push"], check=True)
-        # Tag the commit and push the tag to Github
-        subprocess.run(["git", "tag", "-a", f"v{cfg.db.sample_part}", "-m", f"add data version v{cfg.db.sample_part}"], check=True)
-        subprocess.run(["git", "push", "--tags"], check=True)
+        # Check for changes before committing
+        result = subprocess.run(["git", "status", "--porcelain"], stdout=subprocess.PIPE)
+        changed_files = result.stdout.decode().splitlines()
+        files_to_check = {cfg.dvc.sample_info_path, cfg.dvc.data_version_yaml_path}
+        # Determine if the specific files were changed
+        files_changed = any(any(file in line for file in files_to_check) for line in changed_files)
+        if files_changed:
+            # Commit the changes to Git repository.
+            subprocess.run(["git", "commit", "-m", "Versioned sample data"], check=True)
+            # Push the commit to Github.
+            subprocess.run(["git", "push"], check=True)
+            # Check if the tag already exists
+            repo = Repo('.')
+            tag_name = f"v{cfg.db.sample_part}"
+            if tag_name in repo.tags:
+                # Delete the existing tag locally
+                subprocess.run(["git", "tag", "-d", tag_name], check=True)
+                # Delete the existing tag from the remote repository
+                subprocess.run(["git", "push", "origin", "--delete", tag_name], check=True)
+            # Tag the commit and push the tag to Github
+            subprocess.run(["git", "tag", "-a", f"v{cfg.db.sample_part}", "-m", f"add data version v{cfg.db.sample_part}"], check=True)
+            subprocess.run(["git", "push", "--tags"], check=True)
+        else:
+            print("No changes to commit.")
+
     except subprocess.CalledProcessError as e:
         print(f"An error occurred while running shell commands: {e}")
         raise
@@ -91,7 +110,7 @@ def load_and_execute_validate_data(**kwargs):
 
 def version_validated_sample(**kwargs):
     # Pull the sample from XCom
-    sample = kwargs['ti'].xcom_pull(key='sample', task_ids='extract_sample_task')
+    sample = kwargs['ti'].xcom_pull(key='sample', task_ids='validate_initial_data_task')
     # Version the validated sample using DVC
     version_data(cfg, sample)
 

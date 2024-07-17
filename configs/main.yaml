@@ -1,9 +1,9 @@
 db:
   db_creator: abdullahbuzaid
   db_name: ali-express-data
-  sample_path: ./data/samples/sample.csv
-  data_path: ./data/raw.csv
+  sample_path: data/samples/sample.csv
+  data_path: data/raw.csv
   kaggle_filename: raw
 dvc:
-  sample_info_path: ./data/samples/sample.csv.dvc
-  data_version_yaml_path: ./configs/data_version.yaml
+  sample_info_path: data/samples/sample.csv.dvc
+  data_version_yaml_path: configs/data_version.yaml

@@ -6,7 +6,7 @@ import os
 
 # Add the parent directory of 'src' to the Python path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
-from src import data
+import data
 
 import os
 

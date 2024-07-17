@@ -207,11 +207,11 @@ def validate_initial_data(cfg, sample):
 
 
 def read_datastore():
-    
     # TODO add config with path instad hardcode
-    
-    df = pd.read_csv("data/samples/sample.csv")
-    with open("configs/data_version.yaml", "r") as stream:
+    data_folder = os.environ.get('DATA_STORAGE')
+    configs_folder = os.environ.get('CONFIGS_FOLDER')
+    df = pd.read_csv(f'{str(data_folder)}/samples/sample.csv')
+    with open(f'{configs_folder}/data_version.yaml', "r") as stream:
         config_version_data = yaml.safe_load(stream)
     version = config_version_data['version']
     return df, version

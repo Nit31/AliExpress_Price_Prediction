@@ -7,3 +7,8 @@ db:
 dvc:
   sample_info_path: data/samples/sample.csv.dvc
   data_version_yaml_path: configs/data_version.yaml
+mlflow:
+  train_val_data_version: 1
+  test_data_version: 2
+  val_size: 0.2
+  test_size: 0.5

@@ -207,7 +207,8 @@ def validate_initial_data(cfg, sample):
 
 
 def read_datastore():
-    # TODO add config with path instad hardcode
+    # TODO: add config with path instad hardcode
+    # FIXME:
     data_folder = os.environ.get('DATA_STORAGE')
     configs_folder = os.environ.get('CONFIGS_FOLDER')
     df = pd.read_csv(f'{str(data_folder)}/samples/sample.csv')

@@ -2,15 +2,7 @@ import pandas as pd
 from typing_extensions import Tuple, Annotated
 from zenml import step, pipeline, ArtifactConfig
 import sys
-import os
-
-# Add the parent directory of 'src' to the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '../../..')))
 import data
-
-import os
-
-BASE_PATH = os.path.expandvars("$PROJECTPATH")
 
 @step(enable_cache=False)
 def extract()-> Tuple[

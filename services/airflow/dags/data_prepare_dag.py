@@ -1,7 +1,6 @@
 from datetime import timedelta
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
 from airflow.operators.python import PythonOperator
 from airflow.sensors.external_task import ExternalTaskSensor
 from airflow.utils.dates import days_ago
@@ -14,6 +13,14 @@ default_args = {
     'retry_delay': timedelta(minutes=5),
     'catchup': False,
 }
+
+def load_and_execute_data_prepare(**kwargs):
+    """
+    Load and execute the data preparation pipeline.
+    """
+    # FIXME:
+    import subprocess
+    subprocess.run(['python', 'services/airflow/dags/data_prepare.py'], check=True)
 
 # Define DAG
 with DAG(
@@ -34,9 +41,12 @@ with DAG(
     )
 
     # Bash task to run the ZenML pipeline
-    run_zenml_pipeline = BashOperator(
+    run_zenml_pipeline = PythonOperator(
         task_id='run_zenml_pipeline',
-        bash_command='python $AIRFLOW_HOME/dags/data_prepare.py -prepare_data_pipeline ',  # Replace with your ZenML pipeline path
+        # FIXME:
+        # bash_command='python $AIRFLOW_HOME/dags/data_prepare.py -prepare_data_pipeline ',  # Replace with your ZenML pipeline path
+        python_callable=load_and_execute_data_prepare,
+        provide_context=True,
         retries=1,
         retry_delay=timedelta(seconds=3),  # Adjust retry delay as needed
     )

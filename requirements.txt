@@ -17,6 +17,7 @@ category_encoders
 graphviz
 kubernetes
 apache-airflow==2.7.3
+git
 flask-appbuilder
 pydantic
 apache-airflow-providers-cncf-kubernetes

@@ -1,11 +1,28 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
+from mlflow.tracing.processor import mlflow
 from torch.utils.data import DataLoader, TensorDataset
-from sklearn.model_selection import GridSearchCV
+from sklearn.model_selection import GridSearchCV, ParameterGrid, cross_val_score
 from sklearn.metrics import r2_score
 from sklearn.base import BaseEstimator, RegressorMixin
 from joblib import Parallel, delayed
+import random
+import numpy as np
+from mlflow.models import infer_signature
+
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+    if torch.cuda.is_available():
+        torch.cuda.manual_seed(seed)
+        torch.cuda.manual_seed_all(seed)
+    # Some other options if you are using cudnn
+    torch.backends.cudnn.deterministic = True
+    torch.backends.cudnn.benchmark = False
+
 
 # Create a simple perceptron model
 class Perceptron(nn.Module):
@@ -14,16 +31,17 @@ class Perceptron(nn.Module):
         self.fc = nn.ModuleList([nn.Linear(input_dim, hidden_dim)])
         self.fc.extend([nn.Linear(hidden_dim, hidden_dim) for _ in range(num_hidden_layers)])
         self.fc.append(nn.Linear(hidden_dim, output_dim))
-        
+
     def forward(self, x):
         for layer in self.fc[:-1]:
             x = torch.relu(layer(x))
         x = self.fc[-1](x)
         return x
 
+
 # Custom regressor to use with GridSearchCV
 class PyTorchRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, input_dim, hidden_dim=10, output_dim=1, lr=0.01, epochs=10, hidden_layers=1, batch_size=32):
+    def __init__(self, input_dim, hidden_dim=10, output_dim=1, lr=0.01, epochs=10, hidden_layers=1, batch_size=32, optimizer='adam'):
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.output_dim = output_dim
@@ -33,6 +51,13 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
         self.batch_size = batch_size
         self.device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
         self.model = Perceptron(input_dim, hidden_dim, output_dim, hidden_layers).to(self.device)
+        if optimizer == 'Adam':
+            self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
+        elif optimizer == 'SGD':
+            self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
+        elif optimizer == 'RMSprop':
+            self.optimizer = optim.RMSprop(self.model.parameters(), lr=self.lr)
+
 
     def fit(self, X, y):
         self.model = Perceptron(self.input_dim, self.hidden_dim, self.output_dim, self.hidden_layers).to(self.device)
@@ -65,20 +90,70 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
         y_pred = self.predict(X)
         return r2_score(y, y_pred)
 
-def nn_run(cfg, X_train, X_val, X_test, y_train, y_val, y_test):
-    # Define the parameter grid
-    param_grid = dict(cfg.models.perceptron)
 
-    # Perform GridSearchCV
+def train_and_evaluate_model(params, X_train, y_train):
     pytorch_regressor = PyTorchRegressor(input_dim=X_train.shape[1], output_dim=1)
-    grid_search = GridSearchCV(estimator=pytorch_regressor, param_grid=param_grid, cv=3, scoring='r2', verbose=3)
-    grid_search.fit(X_train, y_train)
+    model = pytorch_regressor.set_params(**params)
+    scores = cross_val_score(model, X_train, y_train, cv=3, scoring='r2')
+    return model, np.mean(scores)
 
-    # Print the best parameters and the best score
-    print(f"Best parameters: {grid_search.best_params_}")
-    print(f"Best cross-validation score: {grid_search.best_score_}")
 
-    # Evaluate on the test set
-    best_model = grid_search.best_estimator_
-    test_score = best_model.score(X_test, y_test)
-    print(f"Test set score: {test_score}")
+def nn_run(cfg,model_architecture, X_train, X_val, X_test, y_train, y_val, y_test):
+    if model_architecture == 1:
+        set_seed(cfg.models.model1.random_state)
+        param_grid = dict(cfg.models.model1.params)
+    else:
+        set_seed(cfg.models.model2.random_state)
+        param_grid = dict(cfg.models.model2.params)
+
+
+    experiment_name = f"Model_dim{param_grid['hidden_dim']}_layers{param_grid['hidden_layers']}_experiment"
+    try:
+        # Create a new MLflow Experiment
+        experiment_id = mlflow.create_experiment(name=experiment_name)
+    except mlflow.exceptions.MlflowException as e:
+        experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
+    for i, params in enumerate(ParameterGrid(param_grid)):
+        model, mean_score = train_and_evaluate_model(params, X_train, y_train)
+        run_name = f'r2_score{mean_score}_run{i}'
+        with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as run:
+            mlflow.log_params(params)
+            mlflow.log_metrics({"r2": mean_score})
+            mlflow.set_tag("Training Info", f"Fully-connected model architecture for aliexpress using")
+            # Fit the model on the entire training set
+            model.fit(X_train, y_train)
+            # Infer the model signature
+            signature = infer_signature(X_train, y_train)
+            # Log the model
+            model_info = mlflow.pytorch.log_model(
+                pytorch_model=model,
+                artifact_path="pytorch model",
+                signature=signature,
+                input_example=X_train.numpy(),  # Use X_train or X_test as needed
+                registered_model_name="pytorch_model"
+            )
+            #
+            # pytorch_pyfunc = mlflow.pyfunc.load_model(model_uri=model_info.model_uri)
+            # predictions = pytorch_pyfunc.predict(X_test)
+            # eval_data["predictions"] = net(X).detach().numpy()
+            # print(eval_data.shape)
+            # results = mlflow.evaluate(
+            #     data=eval_data,
+            #     model_type="regressor",
+            #     targets= "label",
+            #     predictions="predictions",
+            #     evaluators = ["default"]
+            # )
+            # predictions = sk_pyfunc.predict(X_test)
+            # print(predictions)
+            # eval_data = pd.DataFrame(y_test)
+            # eval_data.columns = ["label"]
+            # eval_data["predictions"] = predictions
+            #
+            # results = mlflow.evaluate(
+            #     data=eval_data,
+            #     model_type="classifier",
+            #     targets= "label",
+            #     predictions="predictions",
+            #     evaluators = ["default"]
+            # )

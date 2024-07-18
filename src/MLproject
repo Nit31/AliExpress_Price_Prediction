@@ -1,0 +1,9 @@
+name: Aliexpress_Price_Prediction
+
+# FIXME:
+# idk why we need it, but it replaces the --env-manager=local in every `mlflow run`
+# python_env: python_env.yaml
+
+entry_points:
+  main:
+    command: "python src/main.py --multirun"

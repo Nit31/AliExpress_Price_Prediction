@@ -1,3 +1,5 @@
+hydra:
+  mode: MULTIRUN
 db:
   db_creator: abdullahbuzaid
   db_name: ali-express-data

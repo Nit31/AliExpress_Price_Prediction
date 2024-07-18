@@ -2,8 +2,15 @@ import pandas as pd
 from typing_extensions import Tuple, Annotated
 from zenml import step, pipeline, ArtifactConfig
 import sys
-import data
+from pathlib import Path
+current_dir = Path(__file__).resolve().parent
 
+# Go up two levels to get the parent directory (which contains 'src')
+# Add the 'src' folder to the Python path
+# src_path = '.'
+# sys.path.append(str(src_path))
+# from src import data
+import data
 @step(enable_cache=False)
 def extract()-> Tuple[
     Annotated[pd.DataFrame,
@@ -51,7 +58,7 @@ def validate(X:pd.DataFrame,
         raise Exception('Errors with Expectations!')
 
 @step(enable_cache=False)
-def load(X:pd.DataFrame, y:pd.DataFrame, version: str)-> Tuple[
+def load(X:pd.DataFrame, y:pd.DataFrame, version: int)-> Tuple[
     Annotated[pd.DataFrame,
     ArtifactConfig(name="features",
                    tags=["data_preparation"])],

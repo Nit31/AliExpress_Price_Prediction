@@ -267,7 +267,8 @@ def preprocess_data(df: pd.DataFrame):
     numerical_features = list(cfg.features.numerical)
     try:
         preprocessor = zenml.load_artifact(name_or_id='preprocessor', version='1')
-    except:
+    except Exception as e:
+        print(e)
         preprocessor = None
     if preprocessor is None:
         print('Doesn\'t find preprocessor. Creating...')
@@ -309,7 +310,7 @@ def preprocess_data(df: pd.DataFrame):
         zenml.save_artifact(preprocessor,name='preprocessor',version='1')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     try:
-        roberta_model = zenml.load_artifact(name_or_id='roberta_model', version='1')
+        roberta_model = zenml.load_artifact(name_or_id='roberta_model', version='1').to(device)
     except:
         roberta_model = None
     if roberta_model is None:

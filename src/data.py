@@ -114,6 +114,9 @@ def sample_data(cfg):
         # Remove temporary file
         os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
         os.remove(f'{cfg.db.kaggle_filename}_json.json')
+    
+    # Handle the raw data
+    df = handle_initial_data(cfg, df)
         
     # Take actual sample`s vertion
     with open(cfg.dvc.data_version_yaml_path) as stream:
@@ -145,11 +148,16 @@ def handle_initial_data(cfg, sample):
         except ValueError:
             sold_count = sold_data
         return int(sold_count)
+    
     df['shippingCost'] = df['shippingCost'].replace('None', np.nan).astype(float)
     mean_shipping_cost = df['shippingCost'].mean()
     df['shippingCost'].fillna(mean_shipping_cost, inplace=True)
     df['sold'] = df['sold'].apply(clean_sold)
 
+    # FIXME:
+    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
+    df = df[df['storeName'].map(df['storeName'].value_counts()) > 3]    
+    
     return df
 
 
@@ -246,10 +254,6 @@ def preprocess_data(df: pd.DataFrame):
     # Adding configuration for preprocessing
     hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
     cfg = hydra.compose(config_name="features")
-    
-    # FIXME:
-    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
-    df = df[df['storeName'].map(df['storeName'].value_counts()) > 3]
     
     X = df.drop('price', axis=1)
     

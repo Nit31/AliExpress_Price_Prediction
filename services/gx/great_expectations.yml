@@ -111,6 +111,6 @@ fluent_datasources:
         batch_metadata: {}
 notebooks:
 include_rendered_content:
-  globally: false
   expectation_suite: false
+  globally: false
   expectation_validation_result: false

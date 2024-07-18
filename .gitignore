@@ -167,3 +167,5 @@ cython_debug/
 *.csv
 
 *.zip
+/.zen
+/services/gx/checkpoints

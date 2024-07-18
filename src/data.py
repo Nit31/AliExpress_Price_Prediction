@@ -253,7 +253,7 @@ def preprocess_data(df: pd.DataFrame):
     
     # Adding configuration for preprocessing
     hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
-    cfg = hydra.compose(config_name="features")
+    cfg = hydra.compose(config_name="main")
     
     X = df.drop('price', axis=1)
     
@@ -262,15 +262,29 @@ def preprocess_data(df: pd.DataFrame):
     X['month'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').month)
     X['day'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').day)
     X = X.drop(columns=['lunchTime'])
-    X = X[list(cfg.features.all)]
-    y = df[str(cfg.features.target)]
-    numerical_features = list(cfg.features.numerical)
+    X = X[list(cfg.zenml.features.all)]
+    y = df[str(cfg.zenml.features.target)]
+    numerical_features = list(cfg.zenml.features.numerical)
     try:
         preprocessor = zenml.load_artifact(name_or_id='preprocessor', version='1')
     except Exception as e:
         print(e)
         preprocessor = None
     if preprocessor is None:
+        # Parse data_version
+        with open(cfg.dvc.data_version_yaml_path) as stream:
+            try:
+                data_version = yaml.safe_load(stream)
+            except yaml.YAMLError as exc:
+                print(exc)
+                raise
+        with open_dict(cfg):
+            cfg.db.sample_part = data_version['version']
+        # If there is no preprocessor, and the sample version is not 1, then raise error
+        if cfg.db.sample_part != 1:
+            raise ValueError(f"No preprocessor found. Sample version is not 1.\
+                             Please, run preprocess_data.py with sample version 1.")
+        
         print('Doesn\'t find preprocessor. Creating...')
         # Define the transformers for numerical and categorical features
         numerical_transformer = Pipeline(steps=[
@@ -307,6 +321,10 @@ def preprocess_data(df: pd.DataFrame):
                 # ('text', text_transformer, text_features)
             ]
         )
+        
+        # Fit the pipeline on the training data
+        preprocessor = preprocessor.fit(X)
+        # Save the preprocessor
         zenml.save_artifact(preprocessor,name='preprocessor',version='1')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     try:
@@ -323,7 +341,7 @@ def preprocess_data(df: pd.DataFrame):
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor)
     ])
-    X_transformed = pipeline.fit_transform(X)
+    X_transformed = pipeline.transform(X)
     
     # Convert transformed data back to the dataframe
     num_features_names = numerical_features

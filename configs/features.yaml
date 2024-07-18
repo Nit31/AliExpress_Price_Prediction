@@ -1,4 +1,0 @@
-features:
-  numerical: ['rating', 'sold', 'discount', 'shippingCost']
-  all: ['title', 'rating', 'sold', 'discount', 'shippingCost', 'year', 'month', 'category_name', 'type']
-  target: 'price'

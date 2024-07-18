@@ -9,6 +9,11 @@ db:
 dvc:
   sample_info_path: data/samples/sample.csv.dvc
   data_version_yaml_path: configs/data_version.yaml
+zenml:
+  features:
+    numerical: ['rating', 'sold', 'discount', 'shippingCost']
+    all: ['title', 'rating', 'sold', 'discount', 'shippingCost', 'year', 'month', 'category_name', 'type']
+    target: 'price'
 mlflow:
   train_val_data_version: 1
   test_data_version: 2

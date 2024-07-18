@@ -3,8 +3,9 @@ import hydra
 import zenml
 import yaml
 from sklearn.model_selection import train_test_split
-
-
+from ridge_reg import run_ridge_regression
+from nn_model import nn_run
+import torch
 # Function that load train_val and test samples and split them by ratio
 def get_split_data(cfg):
     try:
@@ -28,8 +29,12 @@ def get_split_data(cfg):
 @hydra.main(config_path="../configs", config_name="main", version_base=None)
 def main(cfg=None):
     # Extract data
+    print(torch.__version__)
     X_train, X_val, X_test, y_train, y_val, y_test = get_split_data(cfg)
     print(len(X_train), len(X_val), len(X_test))
+
+    #run_ridge_regression(cfg,X_train,X_val,X_test,y_train,y_val,y_test)
+    nn_run(cfg,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
     # TODO: Train the model
     
     # TODO: Evaluate the model

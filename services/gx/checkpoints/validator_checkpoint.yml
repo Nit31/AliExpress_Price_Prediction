@@ -20,11 +20,11 @@ evaluation_parameters: {}
 runtime_configuration: {}
 validations:
   - batch_request:
-      datasource_name: features_sample
-      data_asset_name: features_sample
+      datasource_name: sample
+      data_asset_name: pandas_dataframe
       options: {}
       batch_slice:
-    expectation_suite_name: features_expectation_suite
+    expectation_suite_name: expectation_suite
 profilers: []
 ge_cloud_id:
 expectation_suite_ge_cloud_id:

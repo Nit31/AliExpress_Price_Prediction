@@ -126,12 +126,18 @@ def sample_data(cfg):
             print(exc)
             raise
 
-    df_sortes = df.sort_values(by=['lunchTime'])
     sample_part_int = int(data_version['version'])
     if not 1 <= sample_part_int <= 5:
-        print('Sample_part should be < that 6 and > 0')
-        exit(0)
-    df_sample = df_sortes[(len(df_sortes) // 5) * (sample_part_int - 1):(len(df_sortes) // 5) * (sample_part_int)]
+        raise('Sample_part should be < that 6 and > 0')
+        
+    # FIXME:
+    # How it was
+    # df_sortes = df.sort_values(by=['lunchTime'])
+    # df_sample = df_sortes[(len(df_sortes) // 5) * (sample_part_int - 1):(len(df_sortes) // 5) * (sample_part_int)]
+    # How I did
+    df_shuffled = df.sample(frac=1, random_state=42)
+    df_sample = df_shuffled[(len(df_shuffled) // 5) * (sample_part_int - 1):(len(df_shuffled) // 5) * (sample_part_int)]
+
     return df_sample
 
 
@@ -282,7 +288,7 @@ def preprocess_data(df: pd.DataFrame):
             cfg.db.sample_part = data_version['version']
         # If there is no preprocessor, and the sample version is not 1, then raise error
         if cfg.db.sample_part != 1:
-            raise ValueError(f"No preprocessor found. Sample version is not 1.\
+            raise ValueError("No preprocessor found. Sample version is not 1.\
                              Please, run preprocess_data.py with sample version 1.")
         
         print('Doesn\'t find preprocessor. Creating...')

@@ -59,7 +59,7 @@ def version_data(cfg, sample):
                 # Delete the existing tag from the remote repository
                 subprocess.run(["git", "push", "origin", "--delete", tag_name], check=True)
             # Tag the commit and push the tag to Github
-            subprocess.run(["git", "tag", "-a", f"v{cfg.db.sample_part}", "-m", f"add data version v{cfg.db.sample_part}"], check=True)
+            subprocess.run(["git", "tag", "-a", f"v{cfg.data_version.version}", "-m", f"add data version v{cfg.data_version.version}"], check=True)
             subprocess.run(["git", "push", "--tags"], check=True)
         else:
             print("No changes to commit.")

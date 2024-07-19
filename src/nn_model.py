@@ -61,9 +61,9 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
         if self.optimizer == 'Adam':
             self.optimizer_ = optim.Adam(self.model.parameters(), lr=self.lr)
         elif self.optimizer == 'SGD':
-            self.optimizer_ = optim.SGD(self.model.parameters(), lr=self.lr)
+            self.optimizer_ = optim.SGD(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=1e-4)
         elif self.optimizer == 'RMSprop':
-            self.optimizer_ = optim.RMSprop(self.model.parameters(), lr=self.lr)
+            self.optimizer_ = optim.RMSprop(self.model.parameters(), lr=self.lr, alpha=0.99, eps=1e-8)
         else:
             self.optimizer_ = optim.Adam(self.model.parameters(), lr=self.lr)
 
@@ -102,7 +102,7 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
 def train_and_evaluate_model(params, X_train, y_train):
     pytorch_regressor = PyTorchRegressor(input_dim=X_train.shape[1], output_dim=1)
     model = pytorch_regressor.set_params(**params)
-    scores = cross_val_score(model, X_train, y_train, cv=3, scoring='r2')
+    scores = cross_val_score(model, X_train, y_train, cv=4, scoring='r2')
     return model, np.mean(scores)
 
 

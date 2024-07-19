@@ -29,6 +29,7 @@ pyarrow
 
 # MLflow
 mlflow
+giskard==2.14.0
 # feast
 # pendulum
 # shyaml

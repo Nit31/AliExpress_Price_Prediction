@@ -52,7 +52,7 @@ def version_data(cfg, sample):
             subprocess.run(["git", "push"], check=True)
             # Check if the tag already exists
             repo = Repo('.')
-            tag_name = f"v{cfg.data_verstion.version}"
+            tag_name = f"v{cfg.data_version.version}"
             if tag_name in repo.tags:
                 # Delete the existing tag locally
                 subprocess.run(["git", "tag", "-d", tag_name], check=True)

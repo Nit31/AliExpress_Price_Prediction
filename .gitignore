@@ -167,3 +167,9 @@ cython_debug/
 *.csv
 
 *.zip
+/.zen
+/services/gx/checkpoints
+.zen/config.yaml
+services/gx/checkpoints/validator_checkpoint.yml
+services/gx/great_expectations.yml
+/multirun

@@ -1,3 +1,5 @@
+hydra:
+  mode: MULTIRUN
 db:
   db_creator: abdullahbuzaid
   db_name: ali-express-data
@@ -7,8 +9,37 @@ db:
 dvc:
   sample_info_path: data/samples/sample.csv.dvc
   data_version_yaml_path: configs/data_version.yaml
+zenml:
+  features:
+    numerical: ['rating', 'sold', 'discount', 'shippingCost']
+    all: ['title', 'rating', 'sold', 'discount', 'shippingCost', 'year', 'month', 'category_name', 'type']
+    target: 'price'
 mlflow:
   train_val_data_version: 1
   test_data_version: 2
   val_size: 0.2
   test_size: 0.5
+models:
+  model1:
+    random_state: 42
+    params: {
+      'hidden_dim': [ 64 ],
+      'hidden_layers': [ 5 ],
+      'batch_size': [ 128 ],
+      # hyperparameters to search
+      'lr': [0.0001, 0.001, 0.01 ],
+      'epochs': [10, 50, 100, 200],
+      'optimizer': ['SGD','Adam','RMSprop']
+
+    }
+  model2:
+    random_state: 42
+    params: {
+      'hidden_dim': [ 512 ],
+      'hidden_layers': [ 3 ],
+      'batch_size': [ 128 ],
+      # hyperparameters to search
+      'lr': [ 0.0001, 0.001, 0.01 ],
+      'epochs': [ 10, 50, 100, 200 ],
+      'optimizer': [ 'SGD','Adam','RMSprop']
+  }

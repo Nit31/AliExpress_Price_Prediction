@@ -20,7 +20,7 @@
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
         "column": "id",
-        "type_": "int"
+        "type_": "int64"
       },
       "meta": {}
     },
@@ -78,7 +78,7 @@
       "kwargs": {
         "column": "sold",
         "type_list": [
-          "int"
+          "int64"
         ]
       },
       "meta": {}
@@ -126,7 +126,7 @@
       "expectation_type": "expect_column_values_to_be_of_type",
       "kwargs": {
         "column": "discount",
-        "type_": "int"
+        "type_": "int64"
       },
       "meta": {}
     },

@@ -240,8 +240,8 @@ class FixedBinsBinaryEncoder(BaseEstimator, TransformerMixin):
     
 
 def preprocess_data(df: pd.DataFrame):
-    
     # Adding configuration for preprocessing
+    hydra.core.global_hydra.GlobalHydra.instance().clear()
     hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
     cfg = hydra.compose(config_name="features")
     
@@ -301,6 +301,32 @@ def preprocess_data(df: pd.DataFrame):
             ]
         )
         zenml.save_artifact(preprocessor,name='preprocessor',version='1')
+    try:
+        target_preprocessor = zenml.load_artifact(name_or_id='target_preprocessor', version='1')
+    except Exception as e:
+        print(e)
+        target_preprocessor = None
+    if target_preprocessor is None:
+        # If there is no preprocessor, and the sample version is not 1, then raise error
+        if cfg.data_version.version != 1:
+            raise ValueError("No target preprocessor found. Sample version is not 1.\
+                             Please, run preprocess_data.py with sample version 1.")
+
+        print('Doesn\'t find target preprocessor. Creating...')
+        # Define the transformers for numerical and categorical features
+        numerical_transformer = Pipeline(steps=[
+            ('scaler', StandardScaler())  # Standardize numerical features
+        ])
+        # Combine the transformers into a ColumnTransformer
+        target_preprocessor = ColumnTransformer(
+            transformers=[
+                ('num', numerical_transformer, y.columns),
+            ]
+        )
+        # Fit the pipeline on the training data
+        target_preprocessor = target_preprocessor.fit(y)
+        # Save the preprocessor
+        zenml.save_artifact(target_preprocessor,name='target_preprocessor',version='1')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     try:
         roberta_model = zenml.load_artifact(name_or_id='roberta_model', version='1')

@@ -13,20 +13,22 @@ db_main_data = config_main_data["db"]
 
 # Generate the testdata list for @pytest.mark.parametrize
 testdata = [
-    (db_main_data["db_creator"], db_main_data["db_name"], db_main_data["kaggle_filename"], db_main_data['sample_part'],
-        db_main_data["sample_path"])
+    (db_main_data["db_creator"], db_main_data["db_name"], db_main_data["sample_path"], db_main_data['data_path'], db_main_data["kaggle_filename"], config_main_data['dvc']['data_version_yaml_path'])
 ]
 
-@pytest.mark.parametrize("db_creator, db_name, kaggle_filename, sample_part, sample_path", testdata)
-def test_sample_data(db_creator, db_name, kaggle_filename, sample_part, sample_path):
+@pytest.mark.parametrize("db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path", testdata)
+def test_sample_data(db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path):
     cfg = types.SimpleNamespace(
         db = types.SimpleNamespace(
             db_creator = db_creator,
             db_name = db_name,
             kaggle_filename = kaggle_filename,
-            sample_part = sample_part,
+            data_path = data_path,
             sample_path = sample_path
-        )
+        ),
+        dvc = types.SimpleNamespace(
+            data_version_yaml_path = data_version_yaml_path
+        ),
     )
     print(cfg.db)  # Call the function with the test configuration
 
@@ -47,8 +49,8 @@ def test_sample_data_exception():
                 "db_creator": "invalid_creator",
                 "db_name": "invalid_name",
                 "kaggle_filename": "invalid_filename",
-                "sample_part": 2,
-                "sample_path": "invalid_sample.csv"
+                "sample_path": "invalid_sample.csv",
+                "data_path": "data_path"
             }
         }
         sample_data(cfg)  # Call the function with invalid data which should raise an exception

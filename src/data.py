@@ -201,11 +201,11 @@ def validate_initial_data(cfg, sample):
 
 def read_datastore():
     hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
-    cfg = hydra.compose(config_name="data_version")
+    cfg = hydra.compose(config_name="main")
     
     # TODO: add config with path instad hardcode
     df = pd.read_csv('data/samples/sample.csv')
-    version = cfg.version
+    version = cfg.data_version.version
     return df, version
 
 # Class for a binary encoder that had fixed columns
@@ -236,7 +236,7 @@ def preprocess_data(df: pd.DataFrame):
     # Adding configuration for preprocessing
     hydra.core.global_hydra.GlobalHydra.instance().clear()
     hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
-    cfg = hydra.compose(config_name="features")
+    cfg = hydra.compose(config_name="main")
     
     # FIXME:
     df = df[(df['sold'] > 10) & (df['rating'] > 0)]
@@ -249,9 +249,9 @@ def preprocess_data(df: pd.DataFrame):
     X['month'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').month)
     X['day'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').day)
     X = X.drop(columns=['lunchTime'])
-    X = X[list(cfg.features.all)]
-    y = df[str(cfg.features.target)]
-    numerical_features = list(cfg.features.numerical)
+    X = X[list(cfg.zenml.features.all)]
+    y = df[[str(cfg.zenml.features.target)]]
+    numerical_features = list(cfg.zenml.features.numerical)
     try:
         preprocessor = zenml.load_artifact(name_or_id='preprocessor', version='1')
     except:

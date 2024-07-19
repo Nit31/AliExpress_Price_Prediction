@@ -28,7 +28,8 @@ Flask-Session==0.5.0
 pyarrow
 
 # MLflow
-# mlflow
+mlflow
+giskard==2.14.0
 # feast
 # pendulum
 # shyaml

@@ -115,16 +115,9 @@ def sample_data(cfg):
         os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
         os.remove(f'{cfg.db.kaggle_filename}_json.json')
         
-    # Take actual sample`s vertion
-    with open(cfg.dvc.data_version_yaml_path) as stream:
-        try:
-            data_version = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-            raise
-
+    # Take actual sample`s vertion 
     df_sortes = df.sort_values(by=['lunchTime'])
-    sample_part_int = int(data_version['version'])
+    sample_part_int = cfg.data_version.version
     if not 1 <= sample_part_int <= 5:
         print('Sample_part should be < that 6 and > 0')
         exit(0)

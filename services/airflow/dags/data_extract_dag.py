@@ -29,7 +29,7 @@ def version_data(cfg, sample):
     # Save data version
     try:
         with io.open(cfg.dvc.data_version_yaml_path, 'w', encoding='utf8') as outfile:
-            yaml.dump({"version" : cfg.db.sample_part}, outfile, default_flow_style=False, allow_unicode=True)
+            yaml.dump({"data_version" : {"version" : cfg.data_version.version}}, outfile, default_flow_style=False, allow_unicode=True)
     except Exception as e:
         print(e)
         raise
@@ -73,18 +73,8 @@ def load_and_execute_sample_data(**kwargs):
     """
     Extract a new sample of the data
     """
-    # Parse data_version
-    with open(cfg.dvc.data_version_yaml_path) as stream:
-        try:
-            data_version = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-            raise
-    with open_dict(cfg):
-        cfg.db.sample_part = data_version['version']
-
     # Increment version by 1. Assume that there are only 5 samples
-    cfg.db.sample_part = cfg.db.sample_part % 5 + 1
+    cfg.data_version.version = cfg.data_version.version % 5 + 1
     sample = sample_data(cfg)
     # Push the sample to XCom
     kwargs['ti'].xcom_push(key='sample', value=sample)

@@ -5,10 +5,13 @@ import yaml
 from sklearn.model_selection import train_test_split
 from ridge_reg import run_ridge_regression
 from nn_model import nn_run
-import torch
-# Function that load train_val and test samples and split them by ratio
+from omegaconf import OmegaConf
+
+
 def get_split_data(cfg):
     try:
+        print("!!!!!!!!!!!!!!!!")
+        print(cfg.mlflow.train_val_data_version)
         train_val = zenml.load_artifact(name_or_id='features_target', version=str(cfg.mlflow.train_val_data_version))
         test = zenml.load_artifact(name_or_id='features_target', version=str(cfg.mlflow.test_data_version))
     except Exception as e:
@@ -33,20 +36,21 @@ def log_metadata():
     ...
 
 
-@hydra.main(config_path="../configs", config_name="main", version_base=None)
+@hydra.main(config_path="../configs", config_name='main', version_base=None)
 def main(cfg=None):
+    # print(OmegaConf.to_yaml(cfg))
+    
     # Extract data
-    print(torch.__version__)
     X_train, X_val, X_test, y_train, y_val, y_test = get_split_data(cfg)
     print(len(X_train), len(X_val), len(X_test))
 
-    nn_run(cfg,1,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
+    # # nn_run(cfg,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
 
-    # Train the models
-    gs = train(X_train, y_train, cfg=cfg)
+    # # Train the models
+    # gs = train(X_train, y_train, cfg=cfg)
 
-    # Log the metadata
-    log_metadata(cfg, gs, X_train, y_train, X_test, y_test)
+    # # Log the metadata
+    # log_metadata(cfg, gs, X_train, y_train, X_test, y_test)
 
 
 if __name__ == "__main__":

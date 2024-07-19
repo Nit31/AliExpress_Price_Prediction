@@ -1,0 +1,11 @@
+defaults:
+  - _self_
+
+folds: 3
+
+evaluation_metric: "r2"
+cv_evaluation_metric: "r2"
+
+metrics:
+  r2: "r2"
+  mse: "mse"

@@ -1,5 +1,0 @@
-# Train set is taken from one sample
-train: 0.8
-validation: 0.2
-# Test set is taken from another sample
-test: 0.5

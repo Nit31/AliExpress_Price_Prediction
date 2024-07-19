@@ -7,5 +7,5 @@ name: Aliexpress_Price_Prediction
 entry_points:
   main:
     command: "python src/main.py --multirun"
-  evaluate:
-    command: "python src/evaluate.py"
+  # evaluate:
+  #   command: "python src/evaluate.py"

@@ -101,7 +101,7 @@ def load_and_execute_validate_data(**kwargs):
         # If the validation failed, then try to handle the initial data
         assert validate_initial_data(cfg, sample)
     except Exception:
-        sample = handle_initial_data(cfg, sample)
+        sample = handle_initial_data(sample)
     assert validate_initial_data(cfg, sample)
 
     # Push the sample to XCom

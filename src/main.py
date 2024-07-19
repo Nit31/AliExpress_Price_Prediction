@@ -64,7 +64,7 @@ def log_metadata():
 
 @hydra.main(config_path="../configs", config_name='main', version_base=None)
 def main(cfg=None):
-    # print(OmegaConf.to_yaml(cfg))
+    print(OmegaConf.to_yaml(cfg))
     
     # Extract data
     X_train, X_val, X_test, y_train, y_val, y_test = get_split_data(cfg)
@@ -72,7 +72,7 @@ def main(cfg=None):
     # # nn_run(cfg,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
 
     # Train the models
-    train(X_train.to_numpy(), y_train.to_numpy(), cfg=cfg)
+    # train(X_train.to_numpy(), y_train.to_numpy(), cfg=cfg)
 
     # # Log the metadata
     # log_metadata(cfg, gs, X_train, y_train, X_test, y_test)

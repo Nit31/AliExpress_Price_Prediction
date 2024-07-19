@@ -114,9 +114,6 @@ def sample_data(cfg):
         # Remove temporary file
         os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
         os.remove(f'{cfg.db.kaggle_filename}_json.json')
-    
-    # Handle the raw data
-    df = handle_initial_data(cfg, df)
         
     # Take actual sample`s vertion
     with open(cfg.dvc.data_version_yaml_path) as stream:
@@ -126,18 +123,12 @@ def sample_data(cfg):
             print(exc)
             raise
 
+    df_sortes = df.sort_values(by=['lunchTime'])
     sample_part_int = int(data_version['version'])
     if not 1 <= sample_part_int <= 5:
-        raise('Sample_part should be < that 6 and > 0')
-        
-    # FIXME:
-    # How it was
-    # df_sortes = df.sort_values(by=['lunchTime'])
-    # df_sample = df_sortes[(len(df_sortes) // 5) * (sample_part_int - 1):(len(df_sortes) // 5) * (sample_part_int)]
-    # How I did
-    df_shuffled = df.sample(frac=1, random_state=42)
-    df_sample = df_shuffled[(len(df_shuffled) // 5) * (sample_part_int - 1):(len(df_shuffled) // 5) * (sample_part_int)]
-
+        print('Sample_part should be < that 6 and > 0')
+        exit(0)
+    df_sample = df_sortes[(len(df_sortes) // 5) * (sample_part_int - 1):(len(df_sortes) // 5) * (sample_part_int)]
     return df_sample
 
 
@@ -154,16 +145,11 @@ def handle_initial_data(sample):
         except ValueError:
             sold_count = sold_data
         return int(sold_count)
-    
     df['shippingCost'] = df['shippingCost'].replace('None', np.nan).astype(float)
     mean_shipping_cost = df['shippingCost'].mean()
     df['shippingCost'].fillna(mean_shipping_cost, inplace=True)
     df['sold'] = df['sold'].apply(clean_sold)
 
-    # FIXME:
-    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
-    df = df[df['storeName'].map(df['storeName'].value_counts()) > 3]    
-    
     return df
 
 
@@ -221,11 +207,12 @@ def validate_initial_data(cfg, sample):
 
 
 def read_datastore():
+    hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
+    cfg = hydra.compose(config_name="data_version")
+    
     # TODO: add config with path instad hardcode
     df = pd.read_csv('data/samples/sample.csv')
-    with open('configs/data_version.yaml', "r") as stream:
-        config_version_data = yaml.safe_load(stream)
-    version = config_version_data['version']
+    version = cfg.version
     return df, version
 
 # Class for a binary encoder that had fixed columns
@@ -256,7 +243,11 @@ def preprocess_data(df: pd.DataFrame):
     
     # Adding configuration for preprocessing
     hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
-    cfg = hydra.compose(config_name="main")
+    cfg = hydra.compose(config_name="features")
+    
+    # FIXME:
+    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
+    df = df[df['storeName'].map(df['storeName'].value_counts()) > 3]
     
     X = df.drop('price', axis=1)
     
@@ -265,29 +256,14 @@ def preprocess_data(df: pd.DataFrame):
     X['month'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').month)
     X['day'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').day)
     X = X.drop(columns=['lunchTime'])
-    X = X[list(cfg.zenml.features.all)]
-    y = df[[str(cfg.zenml.features.target)]]
-    numerical_features = list(cfg.zenml.features.numerical)
+    X = X[list(cfg.features.all)]
+    y = df[str(cfg.features.target)]
+    numerical_features = list(cfg.features.numerical)
     try:
         preprocessor = zenml.load_artifact(name_or_id='preprocessor', version='1')
-    except Exception as e:
-        print(e)
+    except:
         preprocessor = None
     if preprocessor is None:
-        # Parse data_version
-        with open(cfg.dvc.data_version_yaml_path) as stream:
-            try:
-                data_version = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
-                raise
-        with open_dict(cfg):
-            cfg.db.sample_part = data_version['version']
-        # If there is no preprocessor, and the sample version is not 1, then raise error
-        if cfg.db.sample_part != 1:
-            raise ValueError("No preprocessor found. Sample version is not 1.\
-                             Please, run preprocess_data.py with sample version 1.")
-        
         print('Doesn\'t find preprocessor. Creating...')
         # Define the transformers for numerical and categorical features
         numerical_transformer = Pipeline(steps=[
@@ -312,6 +288,7 @@ def preprocess_data(df: pd.DataFrame):
             ('fb_2', FixedBinsBinaryEncoder(max_bins=9))
         ])
 
+
         # Combine the transformers into a ColumnTransformer
         preprocessor = ColumnTransformer(
             transformers=[
@@ -323,48 +300,10 @@ def preprocess_data(df: pd.DataFrame):
                 # ('text', text_transformer, text_features)
             ]
         )
-        # Fit the pipeline on the training data
-        preprocessor = preprocessor.fit(X)
-        # Save the preprocessor
         zenml.save_artifact(preprocessor,name='preprocessor',version='1')
-    try:
-        target_preprocessor = zenml.load_artifact(name_or_id='target_preprocessor', version='1')
-    except Exception as e:
-        print(e)
-        target_preprocessor = None
-    if target_preprocessor is None:
-        # Parse data_version
-        with open(cfg.dvc.data_version_yaml_path) as stream:
-            try:
-                data_version = yaml.safe_load(stream)
-            except yaml.YAMLError as exc:
-                print(exc)
-                raise
-        with open_dict(cfg):
-            cfg.db.sample_part = data_version['version']
-        # If there is no preprocessor, and the sample version is not 1, then raise error
-        if cfg.db.sample_part != 1:
-            raise ValueError("No target preprocessor found. Sample version is not 1.\
-                             Please, run preprocess_data.py with sample version 1.")
-
-        print('Doesn\'t find target preprocessor. Creating...')
-        # Define the transformers for numerical and categorical features
-        numerical_transformer = Pipeline(steps=[
-            ('scaler', StandardScaler())  # Standardize numerical features
-        ])
-        # Combine the transformers into a ColumnTransformer
-        target_preprocessor = ColumnTransformer(
-            transformers=[
-                ('num', numerical_transformer, y.columns),
-            ]
-        )
-        # Fit the pipeline on the training data
-        target_preprocessor = target_preprocessor.fit(y)
-        # Save the preprocessor
-        zenml.save_artifact(target_preprocessor,name='target_preprocessor',version='1')
     device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
     try:
-        roberta_model = zenml.load_artifact(name_or_id='roberta_model', version='1').to(device)
+        roberta_model = zenml.load_artifact(name_or_id='roberta_model', version='1')
     except:
         roberta_model = None
     if roberta_model is None:
@@ -377,17 +316,14 @@ def preprocess_data(df: pd.DataFrame):
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor)
     ])
-    target_pipeline = Pipeline(steps=[
-        ('preprocessor', target_preprocessor)
-    ])
-    # Transform the features
-    X_transformed = pipeline.transform(X)
-    y_transformed = target_pipeline.transform(y)
+    X_transformed = pipeline.fit_transform(X)
+    
     # Convert transformed data back to the dataframe
     num_features_names = numerical_features
     type_features_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(['type'])
     all_feature_names = list(num_features_names) + list(type_features_names) + list([f'month_{i}' for i in range(12)]) + list([f'year_{i}' for i in range(6)]) + list([f'cn_{i}' for i in range(9)])
     df_transformed = pd.DataFrame(X_transformed, columns=all_feature_names)
+    
     # Preprocess text feature
     #model_name = 'roberta-base'
 
@@ -398,11 +334,10 @@ def preprocess_data(df: pd.DataFrame):
     title_feature_name = [f'title_{i}' for i in range(embeddings.shape[1])]
     df_titles = pd.DataFrame(embeddings.numpy(), columns=title_feature_name)
     df_transformed = pd.concat([df_transformed,df_titles],axis=1)
-    y_df = pd.DataFrame(y_transformed,columns=['price'])
     del roberta_model
     torch.cuda.empty_cache()
+    y_df = pd.DataFrame(y)
     df_transformed.to_csv('test.csv')
-    y_df.to_csv('test_target.csv')
     return df_transformed, y_df
 
 

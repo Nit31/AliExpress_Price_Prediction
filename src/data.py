@@ -423,7 +423,7 @@ def test_data(cfg: DictConfig = None):
         # if the validation failed, then try to handle the initial data
         assert validate_initial_data(cfg, sample)
     except Exception:
-        sample = handle_initial_data(cfg, sample)
+        sample = handle_initial_data(sample)
         #sample.to_csv(cfg.db.sample_path)
     assert validate_initial_data(cfg, sample)
 

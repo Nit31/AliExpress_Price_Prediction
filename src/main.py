@@ -40,7 +40,7 @@ def main(cfg=None):
     X_train, X_val, X_test, y_train, y_val, y_test = get_split_data(cfg)
     print(len(X_train), len(X_val), len(X_test))
 
-    # nn_run(cfg,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
+    nn_run(cfg,1,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
 
     # Train the models
     gs = train(X_train, y_train, cfg=cfg)

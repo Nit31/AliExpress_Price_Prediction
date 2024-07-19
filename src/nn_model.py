@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.optim as optim
-from mlflow.tracing.processor import mlflow
+import mlflow
 from torch.utils.data import DataLoader, TensorDataset
 from sklearn.model_selection import GridSearchCV, ParameterGrid, cross_val_score
 from sklearn.metrics import r2_score
@@ -49,20 +49,27 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
         self.epochs = epochs
         self.hidden_layers = hidden_layers
         self.batch_size = batch_size
+        self.optimizer = optimizer  # Store optimizer name as a string
         self.device = torch.device("cuda" if torch.cuda.is_available() else 'cpu')
-        self.model = Perceptron(input_dim, hidden_dim, output_dim, hidden_layers).to(self.device)
-        if optimizer == 'Adam':
-            self.optimizer = optim.Adam(self.model.parameters(), lr=self.lr)
-        elif optimizer == 'SGD':
-            self.optimizer = optim.SGD(self.model.parameters(), lr=self.lr)
-        elif optimizer == 'RMSprop':
-            self.optimizer = optim.RMSprop(self.model.parameters(), lr=self.lr)
+        self._initialize_model()
 
+    def _initialize_model(self):
+        self.model = Perceptron(self.input_dim, self.hidden_dim, self.output_dim, self.hidden_layers).to(self.device)
+        self._initialize_optimizer()
+
+    def _initialize_optimizer(self):
+        if self.optimizer == 'Adam':
+            self.optimizer_ = optim.Adam(self.model.parameters(), lr=self.lr)
+        elif self.optimizer == 'SGD':
+            self.optimizer_ = optim.SGD(self.model.parameters(), lr=self.lr)
+        elif self.optimizer == 'RMSprop':
+            self.optimizer_ = optim.RMSprop(self.model.parameters(), lr=self.lr)
+        else:
+            self.optimizer_ = optim.Adam(self.model.parameters(), lr=self.lr)
 
     def fit(self, X, y):
-        self.model = Perceptron(self.input_dim, self.hidden_dim, self.output_dim, self.hidden_layers).to(self.device)
+        self._initialize_model()
         criterion = nn.MSELoss()
-        optimizer = optim.AdamW(self.model.parameters(), lr=self.lr, weight_decay=0.0001)
 
         X_tensor = torch.tensor(X, dtype=torch.float32)
         y_tensor = torch.tensor(y, dtype=torch.float32).view(-1, 1)
@@ -73,11 +80,11 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
             self.model.train()
             for X_batch, y_batch in dataloader:
                 X_batch, y_batch = X_batch.to(self.device), y_batch.to(self.device)
-                optimizer.zero_grad()
+                self.optimizer_.zero_grad()
                 outputs = self.model(X_batch)
                 loss = criterion(outputs, y_batch)
                 loss.backward()
-                optimizer.step()
+                self.optimizer_.step()
 
     def predict(self, X):
         self.model.eval()
@@ -89,6 +96,7 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
     def score(self, X, y):
         y_pred = self.predict(X)
         return r2_score(y, y_pred)
+
 
 
 def train_and_evaluate_model(params, X_train, y_train):
@@ -126,11 +134,11 @@ def nn_run(cfg,model_architecture, X_train, X_val, X_test, y_train, y_val, y_tes
             signature = infer_signature(X_train, y_train)
             # Log the model
             model_info = mlflow.pytorch.log_model(
-                pytorch_model=model,
-                artifact_path="pytorch model",
+                pytorch_model=model.model,
+                artifact_path=f'models/{experiment_name}/{run_name}',
                 signature=signature,
-                input_example=X_train.numpy(),  # Use X_train or X_test as needed
-                registered_model_name="pytorch_model"
+                input_example=X_train,  # Use X_train or X_test as needed
+                registered_model_name=f'{experiment_name}_{run_name}'
             )
             #
             # pytorch_pyfunc = mlflow.pyfunc.load_model(model_uri=model_info.model_uri)

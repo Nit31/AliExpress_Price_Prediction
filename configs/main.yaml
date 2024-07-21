@@ -5,13 +5,16 @@ defaults:
   - data_version
   - model/model
   - zenml
+  #- override hydra/launcher: joblib
   
 
 hydra:
+#  launcher:
+#    n_jobs: 2
   mode: MULTIRUN
   sweeper:
     params:
-      +model: "model1, model2"
+      +model: "model2, model1"
 
 db:
   db_creator: abdullahbuzaid
@@ -27,5 +30,5 @@ dvc:
 mlflow:
   train_val_data_version: 1
   test_data_version: 2
-  val_size: 0.2
+  #train_size: 1
   test_size: 0.5

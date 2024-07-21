@@ -41,7 +41,7 @@ class Perceptron(nn.Module):
 
 # Custom regressor to use with GridSearchCV
 class PyTorchRegressor(BaseEstimator, RegressorMixin):
-    def __init__(self, input_dim, hidden_dim=10, output_dim=1, lr=0.01, epochs=10, hidden_layers=1, batch_size=32, optimizer='adam'):
+    def __init__(self, input_dim, hidden_dim=10, output_dim=1, lr=0.01, epochs=10, hidden_layers=1, batch_size=128, optimizer='Adam'):
         self.input_dim = input_dim
         self.hidden_dim = hidden_dim
         self.output_dim = output_dim
@@ -102,11 +102,12 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
 def train_and_evaluate_model(params, X_train, y_train):
     pytorch_regressor = PyTorchRegressor(input_dim=X_train.shape[1], output_dim=1)
     model = pytorch_regressor.set_params(**params)
-    scores = cross_val_score(model, X_train, y_train, cv=4, scoring='r2')
+    scores = cross_val_score(model, X_train, y_train, cv=3, scoring='r2')
+    model.fit(X_train, y_train)
     return model, np.mean(scores)
 
 
-def nn_run(cfg,model_architecture, X_train, X_val, X_test, y_train, y_val, y_test):
+def nn_run(cfg,model_architecture, X_train, X_test, y_train, y_test):
     if model_architecture == 1:
         set_seed(cfg.models.model1.random_state)
         param_grid = dict(cfg.models.model1.params)
@@ -128,8 +129,6 @@ def nn_run(cfg,model_architecture, X_train, X_val, X_test, y_train, y_val, y_tes
             mlflow.log_params(params)
             mlflow.log_metrics({"r2": mean_score})
             mlflow.set_tag("Training Info", f"Fully-connected model architecture for aliexpress using")
-            # Fit the model on the entire training set
-            model.fit(X_train, y_train)
             # Infer the model signature
             signature = infer_signature(X_train, y_train)
             # Log the model

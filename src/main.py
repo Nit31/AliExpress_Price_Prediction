@@ -4,12 +4,14 @@ import torch
 import zenml
 from sklearn.model_selection import train_test_split
 from sklearn.model_selection import GridSearchCV, ParameterGrid, cross_val_score
-from nn_model import nn_run
+from nn_model import nn_run, set_seed
 from omegaconf import OmegaConf
 import mlflow
+from mlflow.tracking import MlflowClient
 from nn_model import train_and_evaluate_model
 from mlflow.models import infer_signature
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
+import matplotlib.pyplot as plt
 
 def get_split_data(cfg):
     try:
@@ -106,32 +108,88 @@ def train(X_train, y_train, cfg):
             model, mean_score = train_and_evaluate_model(params, X_train, y_train)
             models.append({'model':model, 'mean_score':mean_score, 'params':params})
         return models
-        # run_name = f'r2_score{mean_score}_run{i}'
-        # with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as run:
 
 
-            # mlflow.log_params(params)
-            # mlflow.log_metrics({"r2": mean_score})
-            # mlflow.set_tag("Training Info", f"Fully-connected model architecture for aliexpress using")
-            # # Fit the model on the entire training set
-            #
-            # # Infer the model signature
-            # signature = infer_signature(X_train, y_train)
-            # # Log the model
-            # model_info = mlflow.pytorch.log_model(
-            #     pytorch_model=model.model,
-            #     artifact_path=f'models/{experiment_name}/{run_name}',
-            #     signature=signature,
-            #     input_example=X_train,  # Use X_train or X_test as needed
-            #     registered_model_name=f'{experiment_name}_{run_name}'
-            # )
+def log_charts(cfg=None):
+    try:
+        mlflow.set_tracking_uri("http://localhost:5000")
+    except:
+        pass
+    # Initialize MLflow client
+    client = MlflowClient()
+
+    # Get all experiments
+    experiments = client.search_experiments()
+
+    # List to hold all metrics data
+    all_metrics_data = []
+
+    # Iterate through all experiments
+    for exp in experiments:
+        exp_id = exp.experiment_id
+        # Get all runs for the experiment
+        runs = client.search_runs(experiment_ids=[exp_id])
+
+        # Iterate through all runs
+        for run in runs:
+            run_id = run.info.run_id
+            # Get metrics for the run
+            data = client.get_run(run_id).data
+            metrics = data.metrics
+
+            # Collect metrics with the run ID and experiment ID
+            for metric, value in metrics.items():
+                all_metrics_data.append({
+                    'experiment_id': exp_id,
+                    'run_id': run_id,
+                    'metric': metric,
+                    'value': value
+                })
+
+            # Create and log individual metric plots
+            for metric, value in metrics.items():
+                plt.figure(figsize=(10, 6))
+                plt.bar([0], [value], tick_label=[metric])
+                plt.title(f'Run ID: {run_id}, Metric: {metric}')
+                plt.xlabel('Metric')
+                plt.ylabel('Value')
+                plt.tight_layout()
+
+                # Log the plot to MLflow within the context of the current run
+                with mlflow.start_run(run_id=run_id, nested=True):
+                    plot_path = f'{metric}_plot.png'
+                    plt.savefig(plot_path)
+                    mlflow.log_artifact(plot_path)
+
+                plt.close()
+
+    # Convert the collected metrics data to a DataFrame
+    metrics_df = pd.DataFrame(all_metrics_data)
+
+    # Create a pivot table for easier plotting
+    pivot_df = metrics_df.pivot_table(index='run_id', columns='metric', values='value')
+
+    # Plot grouped bar chart for comparison across all models
+    pivot_df.plot(kind='bar', figsize=(14, 8), width=0.8)
+    plt.title('Comparison of Metrics Across All Models')
+    plt.xlabel('Run ID')
+    plt.ylabel('Metric Value')
+    plt.legend(title='Metrics')
+    plt.tight_layout()
+
+    # Save and log the combined plot
+    combined_plot_path = 'combined_metrics_plot.png'
+    plt.savefig(combined_plot_path)
+    mlflow.log_artifact(combined_plot_path)
+
+    plt.close()
 
 
 
 @hydra.main(config_path="../configs", config_name='main', version_base=None)
 def main(cfg=None):
     print(OmegaConf.to_yaml(cfg))
-    
+    set_seed(cfg.experiment.random_state)
     # Extract data
     X_train, X_test, y_train, y_test = get_split_data(cfg)
 
@@ -139,7 +197,6 @@ def main(cfg=None):
     models = train(X_train.to_numpy(), y_train.to_numpy(), cfg=cfg)
 
     log_metadata(cfg, models, X_train, X_test, y_train, y_test)
-
     # # nn_run(cfg,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
 
 

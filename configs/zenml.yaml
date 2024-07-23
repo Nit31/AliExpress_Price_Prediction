@@ -3,3 +3,4 @@ zenml:
     numerical: ['rating', 'sold', 'discount', 'shippingCost']
     all: ['title', 'rating', 'sold', 'discount', 'shippingCost', 'year', 'month', 'category_name', 'type']
     target: 'price'
+    categorical: ['category_name', 'type']

@@ -1,11 +1,9 @@
 import mlflow
 from mlflow import MlflowClient
-# from data import extract_data # custom module
-# from transform_data import transform_data # custom module
-# from model import retrieve_model_with_alias # custom module
+import hydra
 
 
-def get_models_info_by_alias(alias):
+def get_models_info_by_alias(client, alias):
         models_with_alias = []
 
         # Search for all registered models
@@ -27,7 +25,7 @@ def main():
     cfg = hydra.compose(config_name="main")
 
     # Get all models with the alias "Challenger"
-    models_with_challenger_alias = get_models_by_alias("challenger")
+    models_with_challenger_alias = get_models_info_by_alias(client, "challenger")
     
     
 

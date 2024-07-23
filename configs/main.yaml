@@ -5,6 +5,7 @@ defaults:
   - data_version
   - model/model
   - zenml
+  - giskard
   #- override hydra/launcher: joblib
   
 

@@ -423,17 +423,7 @@ def test_data(cfg: DictConfig = None):
     """
 
     warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-     # Parse data_version
-    with open(cfg.dvc.data_version_yaml_path) as stream:
-        try:
-            data_version = yaml.safe_load(stream)
-        except yaml.YAMLError as exc:
-            print(exc)
-            raise
-    with open_dict(cfg):
-        cfg.db.sample_part = data_version['version']
-
+    
     # take a sample
     sample = sample_data(cfg)
 

@@ -31,9 +31,8 @@ pyarrow
 mlflow
 giskard==2.14.0
 # feast
+Flask==2.2.5
 # pendulum
 # shyaml
-# mlflow
-# giskard
 # evidently
 # psycopg2-binary

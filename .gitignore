@@ -175,4 +175,3 @@ services/gx/great_expectations.yml
 /multirun
 /mlruns
 .zen/config.yaml
-/mlartifacts

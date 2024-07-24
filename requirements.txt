@@ -30,7 +30,6 @@ pyarrow
 # MLflow
 mlflow
 giskard==2.14.0
-hydra-joblib-launcher
 # feast
 # pendulum
 # shyaml

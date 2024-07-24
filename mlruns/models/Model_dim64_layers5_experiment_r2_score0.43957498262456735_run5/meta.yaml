@@ -1,5 +1,6 @@
-aliases: {}
+aliases:
+  challenger1: '1'
 creation_timestamp: 1721851219673
 description: ''
-last_updated_timestamp: 1721851219681
+last_updated_timestamp: 1721852115042
 name: Model_dim64_layers5_experiment_r2_score0.43957498262456735_run5

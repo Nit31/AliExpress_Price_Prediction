@@ -12,6 +12,8 @@ from nn_model import train_and_evaluate_model
 from mlflow.models import infer_signature
 from sklearn.metrics import mean_absolute_error, mean_squared_error, r2_score
 import matplotlib.pyplot as plt
+import seaborn as sns
+
 
 def get_split_data(cfg):
     try:
@@ -92,7 +94,7 @@ def log_metadata(cfg, models, X_train, X_test, y_train, y_test):
             mlflow.log_metric("mse", mse)
             mlflow.log_metric("r2", r2)
             print('Done!')
-
+    return experiment_name
 
 def train(X_train, y_train, cfg):
         param_grid = dict(cfg.model.params)
@@ -110,17 +112,18 @@ def train(X_train, y_train, cfg):
         return models
 
 
-def log_charts(cfg=None):
+def log_charts(experiment_name, cfg=None):
     try:
         mlflow.set_tracking_uri("http://localhost:5000")
     except:
         pass
+
     # Initialize MLflow client
     client = MlflowClient()
 
     # Get all experiments
-    experiments = client.search_experiments()
-
+    experiments = client.search_experiments(filter_string=f"name = '{experiment_name}'")
+    print(experiments)
     # List to hold all metrics data
     all_metrics_data = []
 
@@ -142,46 +145,58 @@ def log_charts(cfg=None):
                 all_metrics_data.append({
                     'experiment_id': exp_id,
                     'run_id': run_id,
+                    'run_name': run.data.tags.get('mlflow.runName', run_id),  # Use run name if available
                     'metric': metric,
                     'value': value
                 })
 
             # Create and log individual metric plots
-            for metric, value in metrics.items():
-                plt.figure(figsize=(10, 6))
-                plt.bar([0], [value], tick_label=[metric])
-                plt.title(f'Run ID: {run_id}, Metric: {metric}')
-                plt.xlabel('Metric')
-                plt.ylabel('Value')
-                plt.tight_layout()
+            plt.figure(figsize=(10, 6))
+            metric_names = list(metrics.keys())
+            metric_values = list(metrics.values())
+            plt.bar(metric_names, metric_values)
+            plt.title(f'Run ID: {run_id} Metrics')
+            plt.xlabel('Metric')
+            plt.ylabel('Value')
+            plt.tight_layout()
 
-                # Log the plot to MLflow within the context of the current run
-                with mlflow.start_run(run_id=run_id, nested=True):
-                    plot_path = f'{metric}_plot.png'
-                    plt.savefig(plot_path)
-                    mlflow.log_artifact(plot_path)
-
-                plt.close()
+            # Log the plot to MLflow within the context of the current run
+            with mlflow.start_run(run_id=run_id, nested=True):
+                mlflow.log_figure(plt.gcf(), f'{run.info.run_name}_metrics_plot.png')
+                plt.savefig(f'results/{run.info.run_name}_metrics_plot.png')
+            plt.close()
 
     # Convert the collected metrics data to a DataFrame
     metrics_df = pd.DataFrame(all_metrics_data)
 
-    # Create a pivot table for easier plotting
-    pivot_df = metrics_df.pivot_table(index='run_id', columns='metric', values='value')
+    # Pivot the DataFrame for plotting
+    pivot_df = metrics_df.pivot(index='metric', columns='run_name', values='value')
 
-    # Plot grouped bar chart for comparison across all models
-    pivot_df.plot(kind='bar', figsize=(14, 8), width=0.8)
+    # Sort the DataFrame by the second metric
+    if pivot_df.shape[0] > 1:
+        pivot_df = pivot_df.sort_values(by=pivot_df.index[1], axis=1)
+
+    # Plot combined bar chart for comparison across all models
+    plt.figure(figsize=(20, 10))
+    sns.set(style="whitegrid")
+
+    # Create a color palette with as many colors as there are models
+    palette = sns.color_palette("husl", len(pivot_df.columns))
+
+    # Plot with seaborn for better aesthetics
+    pivot_df.plot(kind='bar', figsize=(20, 10), color=palette, width=0.8)
     plt.title('Comparison of Metrics Across All Models')
-    plt.xlabel('Run ID')
-    plt.ylabel('Metric Value')
-    plt.legend(title='Metrics')
+    plt.xlabel('Metric')
+    plt.ylabel('Value')
+    plt.xticks(rotation=45, ha='right')
+    plt.legend(title='Models', bbox_to_anchor=(1.05, 1), loc='upper left')
     plt.tight_layout()
 
-    # Save and log the combined plot
+    # Log the combined plot to MLflow
     combined_plot_path = 'combined_metrics_plot.png'
-    plt.savefig(combined_plot_path)
-    mlflow.log_artifact(combined_plot_path)
-
+    with mlflow.start_run() as run:
+        mlflow.log_figure(plt.gcf(), combined_plot_path)
+        plt.savefig(f'results/whole_{experiment_name}_metrics_plot.png')
     plt.close()
 
 
@@ -196,9 +211,9 @@ def main(cfg=None):
     # Train the models
     models = train(X_train.to_numpy(), y_train.to_numpy(), cfg=cfg)
 
-    log_metadata(cfg, models, X_train, X_test, y_train, y_test)
+    experiment_name = log_metadata(cfg, models, X_train, X_test, y_train, y_test)
     # # nn_run(cfg,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
-
+    log_charts(experiment_name,cfg)
 
 
     # # Log the metadata

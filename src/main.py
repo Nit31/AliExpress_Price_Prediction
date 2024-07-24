@@ -49,51 +49,57 @@ def log_metadata(cfg, models, X_train, X_test, y_train, y_test):
     with mlflow.start_run(run_name='first_run', experiment_id=experiment_id) as run:
         pass
     for i, whole_params in enumerate(models):
-        model = whole_params['model']
-        mean_score = whole_params['mean_score']
-        params = whole_params['params']
-        run_name = f'r2_score{mean_score}_run{i}'
+        try:
+            model = whole_params['model']
+            mean_score = whole_params['mean_score']
+            params = whole_params['params']
+            run_name = f'r2_score{mean_score}_run{i}'
 
-        with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as run:
-            print(f'exp:{mlflow.get_run(run.info.run_id).info.experiment_id}')
-            try:
-                mlflow.log_params(params)
-            except mlflow.exceptions.MlflowException as e:
-                if "Changing param values is not allowed" in str(e):
-                    print(f"Parameter already logged. Skipping...")
-            mlflow.log_metrics({"train r2": mean_score})
-            mlflow.set_tag("Training Info", f"Fully-connected model architecture for aliexpress")
-            # Infer the model signature
-            signature = infer_signature(X_train, y_train)
-            # Log the model
-            model_info = mlflow.pytorch.log_model(
-                pytorch_model=model.model,
-                artifact_path=f'models/{experiment_name}/{run_name}',
-                signature=signature,
-                input_example=X_train,  # Use X_train or X_test as needed
-                registered_model_name=f'{experiment_name}_{run_name}'
-            )
-            eval_data = pd.DataFrame(y_test.values, columns=["real"])
-            # Get predictions from the model
-            device = next(model.model.parameters()).device
-            X_test_tensor = torch.tensor(X_test.values, dtype=torch.float32).to(device)
+            with mlflow.start_run(run_name=run_name, experiment_id=experiment_id) as run:
+                print(f'exp:{mlflow.get_run(run.info.run_id).info.experiment_id}')
+                try:
+                    mlflow.log_params(params)
+                except mlflow.exceptions.MlflowException as e:
+                    if "Changing param values is not allowed" in str(e):
+                        print(f"Parameter already logged. Skipping...")
+                mlflow.log_metrics({"train r2": mean_score})
+                mlflow.set_tag("Training Info", f"Fully-connected model architecture for aliexpress")
+                # Infer the model signature
+                signature = infer_signature(X_train, y_train)
+                # Log the model
+                model.to('cpu')
+                model_info = mlflow.pytorch.log_model(
+                    pytorch_model=model.model,
+                    artifact_path=f'models/{experiment_name}/{run_name}',
+                    signature=signature,
+                    input_example=X_train.head(),  # Use X_train or X_test as needed
+                    registered_model_name=f'{experiment_name}_{run_name}'
+                )
+                model.to('cuda' if torch.cuda.is_available() else 'cpu')
+                torch.cuda.empty_cache()
+                eval_data = pd.DataFrame(y_test.values, columns=["real"])
+                # Get predictions from the model
+                device = next(model.model.parameters()).device
+                X_test_tensor = torch.tensor(X_test.values, dtype=torch.float32).to(device)
 
-            # Get predictions from the model
-            eval_data["predictions"] = model.model(X_test_tensor).detach().cpu().numpy()
-            mae = mean_absolute_error(eval_data["real"], eval_data["predictions"])
-            mse = mean_squared_error(eval_data["real"], eval_data["predictions"])
-            r2 = r2_score(eval_data["real"], eval_data["predictions"])
+                # Get predictions from the model
+                eval_data["predictions"] = model.model(X_test_tensor).detach().cpu().numpy()
+                mae = mean_absolute_error(eval_data["real"], eval_data["predictions"])
+                mse = mean_squared_error(eval_data["real"], eval_data["predictions"])
+                r2 = r2_score(eval_data["real"], eval_data["predictions"])
 
-            # Print the metrics
-            print(f"Mean Absolute Error: {mae}")
-            print(f"Mean Squared Error: {mse}")
-            print(f"R² Score: {r2}")
+                # Print the metrics
+                print(f"Mean Absolute Error: {mae}")
+                print(f"Mean Squared Error: {mse}")
+                print(f"R² Score: {r2}")
 
-            # Log metrics to MLflow
-            mlflow.log_metric("mae", mae)
-            mlflow.log_metric("mse", mse)
-            mlflow.log_metric("r2", r2)
-            print('Done!')
+                # Log metrics to MLflow
+                mlflow.log_metric("mae", mae)
+                mlflow.log_metric("mse", mse)
+                mlflow.log_metric("r2", r2)
+                print('Done!')
+        except Exception as e:
+            print(e)
     return experiment_name
 
 def train(X_train, y_train, cfg):
@@ -212,13 +218,8 @@ def main(cfg=None):
     models = train(X_train.to_numpy(), y_train.to_numpy(), cfg=cfg)
 
     experiment_name = log_metadata(cfg, models, X_train, X_test, y_train, y_test)
-    # # nn_run(cfg,X_train.to_numpy(),X_val.to_numpy(),X_test.to_numpy(),y_train.to_numpy(),y_val.to_numpy(),y_test.to_numpy())
     log_charts(experiment_name,cfg)
-
-
-    # # Log the metadata
-    # log_metadata(cfg, gs, X_train, y_train, X_test, y_test)
-
-
+    
+    
 if __name__ == "__main__":
     main()

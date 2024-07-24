@@ -7,12 +7,12 @@ defaults:
   - zenml
   - giskard
   - api
-  #- override hydra/launcher: joblib
+  - override hydra/launcher: joblib
   
 
 hydra:
-#  launcher:
-#    n_jobs: 2
+  launcher:
+    n_jobs: 2
   mode: MULTIRUN
   sweeper:
     params:

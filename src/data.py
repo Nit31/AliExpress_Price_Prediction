@@ -117,6 +117,8 @@ def sample_data(cfg):
         os.remove(f'{cfg.db.kaggle_filename}_json.json')
         
     df = handle_initial_data(df)
+    # print('---------------------------------')
+    # print(df.shape)
     df = df.sample(frac=1)
     sample_part_int = cfg.data_version.version
     if not 1 <= sample_part_int <= 5:
@@ -145,8 +147,8 @@ def handle_initial_data(sample):
     df['sold'] = df['sold'].apply(clean_sold)
     
     # FIXME:
-    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
-    df = df[df['storeName'].map(df['storeName'].value_counts()) > 2]
+    df = df[(df['sold'] > 30) & (df['rating'] > 0)]
+    df = df[df['storeName'].map(df['storeName'].value_counts()) > 3]
     return df
 
 

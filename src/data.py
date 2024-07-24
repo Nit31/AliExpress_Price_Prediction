@@ -204,11 +204,17 @@ def validate_initial_data(cfg, sample):
 
 
 def read_datastore():
-    hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
-    cfg = hydra.compose(config_name="main")
+    if GlobalHydra.instance().is_initialized():
+            print("Using existing Hydra global instance.")
+            cfg = hydra.compose(config_name="main")
+    else:
+        print("Initializing a new Hydra global instance.")
+        hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
+        cfg = hydra.compose(config_name="main")
     
     # TODO: add config with path instad hardcode
-    df = pd.read_csv('data/samples/sample.csv')
+    df = pd.read_csv(cfg.db.sample_path)
+    
     version = cfg.data_version.version
     return df, version
 

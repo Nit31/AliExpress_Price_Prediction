@@ -7,5 +7,9 @@ name: Aliexpress_Price_Prediction
 entry_points:
   main:
     command: "python src/main.py --multirun"
-  # evaluate:
-  #   command: "python src/evaluate.py"
+  validate:
+    command: "python src/validate.py"
+  transform:
+    command: "python pipelines/data_prepare.py"
+  extract:
+    command: "airflow dags test data_extract_dag"

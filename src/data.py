@@ -2,6 +2,7 @@ import os
 from datetime import datetime
 import pandas as pd
 import hydra
+from hydra.core.global_hydra import GlobalHydra
 from omegaconf import DictConfig, open_dict
 import yaml
 import great_expectations as gx
@@ -115,13 +116,13 @@ def sample_data(cfg):
         os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
         os.remove(f'{cfg.db.kaggle_filename}_json.json')
         
-    # Take actual sample`s vertion 
-    df_sortes = df.sort_values(by=['lunchTime'])
+    df = handle_initial_data(df)
+    df = df.sample(frac=1)
     sample_part_int = cfg.data_version.version
     if not 1 <= sample_part_int <= 5:
-        print('Sample_part should be < that 6 and > 0')
+        print('Sample_part is out of range')
         exit(0)
-    df_sample = df_sortes[(len(df_sortes) // 5) * (sample_part_int - 1):(len(df_sortes) // 5) * (sample_part_int)]
+    df_sample = df[(len(df) // 5) * (sample_part_int - 1):(len(df) // 5) * (sample_part_int)]
     return df_sample
 
 
@@ -142,7 +143,10 @@ def handle_initial_data(sample):
     mean_shipping_cost = df['shippingCost'].mean()
     df['shippingCost'].fillna(mean_shipping_cost, inplace=True)
     df['sold'] = df['sold'].apply(clean_sold)
-
+    
+    # FIXME:
+    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
+    df = df[df['storeName'].map(df['storeName'].value_counts()) > 2]
     return df
 
 
@@ -232,25 +236,31 @@ class FixedBinsBinaryEncoder(BaseEstimator, TransformerMixin):
         return padded_encoded
     
 
-def preprocess_data(df: pd.DataFrame):
-    # Adding configuration for preprocessing
-    hydra.core.global_hydra.GlobalHydra.instance().clear()
-    hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
-    cfg = hydra.compose(config_name="main")
+def preprocess_data(df: pd.DataFrame, cfg = None, skip_target = False):
+    # Setup the config
+    if cfg is None:
+        if GlobalHydra.instance().is_initialized():
+            print("Using existing Hydra global instance.")
+            cfg = hydra.compose(config_name="main")
+        else:
+            print("Initializing a new Hydra global instance.")
+            hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
+            cfg = hydra.compose(config_name="main")
     
-    # FIXME:
-    df = df[(df['sold'] > 10) & (df['rating'] > 0)]
-    df = df[df['storeName'].map(df['storeName'].value_counts()) > 3]
+    print(f"cfg data version {cfg.data_version.version}")    
     
-    X = df.drop('price', axis=1)
-    
+    if not skip_target:
+        X = df.drop(cfg.zenml.features.target, axis=1)
+    else:
+        X = df
     # Convert Date to year, month, and day
     X['year'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').year).astype(str)
     X['month'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').month)
     X['day'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').day)
     X = X.drop(columns=['lunchTime'])
     X = X[list(cfg.zenml.features.all)]
-    y = df[[str(cfg.zenml.features.target)]]
+    if not skip_target:
+        y = df[[cfg.zenml.features.target]]
     numerical_features = list(cfg.zenml.features.numerical)
     try:
         preprocessor = zenml.load_artifact(name_or_id='preprocessor', version='1')
@@ -293,7 +303,12 @@ def preprocess_data(df: pd.DataFrame):
                 # ('text', text_transformer, text_features)
             ]
         )
+        
+        # Fit the preprocessor
+        preprocessor.fit(X)
+        
         zenml.save_artifact(preprocessor,name='preprocessor',version='1')
+        
     try:
         target_preprocessor = zenml.load_artifact(name_or_id='target_preprocessor', version='1')
     except Exception as e:
@@ -303,7 +318,7 @@ def preprocess_data(df: pd.DataFrame):
         # If there is no preprocessor, and the sample version is not 1, then raise error
         if cfg.data_version.version != 1:
             raise ValueError("No target preprocessor found. Sample version is not 1.\
-                             Please, run preprocess_data.py with sample version 1.")
+                            Please, run preprocess_data.py with sample version 1.")
 
         print('Doesn\'t find target preprocessor. Creating...')
         # Define the transformers for numerical and categorical features
@@ -331,12 +346,18 @@ def preprocess_data(df: pd.DataFrame):
         roberta_model = RobertaModel.from_pretrained(model_name).to(device)
         roberta_model.eval()
         zenml.save_artifact(roberta_model,name='roberta_model',version='1')
+        
     # Create the pipeline with the preprocessor
     pipeline = Pipeline(steps=[
         ('preprocessor', preprocessor)
     ])
-    X_transformed = pipeline.fit_transform(X)
+    target_pipeline = Pipeline(steps=[
+        ('preprocessor', target_preprocessor)
+    ])
     
+    X_transformed = pipeline.transform(X)
+    if not skip_target:
+        y_transformed = target_pipeline.transform(y)
     # Convert transformed data back to the dataframe
     num_features_names = numerical_features
     type_features_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(['type'])
@@ -355,8 +376,10 @@ def preprocess_data(df: pd.DataFrame):
     df_transformed = pd.concat([df_transformed,df_titles],axis=1)
     del roberta_model
     torch.cuda.empty_cache()
-    y_df = pd.DataFrame(y)
-    df_transformed.to_csv('test.csv')
+    if not skip_target:
+        y_df = pd.DataFrame(y_transformed,columns=['price'])
+    else:
+        y_df = None
     return df_transformed, y_df
 
 

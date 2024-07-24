@@ -1,15 +1,17 @@
 import mlflow
 import hydra
-from data import sample_data, validate_initial_data, handle_initial_data
+from data import sample_data, validate_initial_data, handle_initial_data, preprocess_data
 import giskard
+import torch
+import zenml
 
 
 def get_models_info_by_alias(client, alias):
     models_with_alias = []
     # Search for all registered models
-    for model_info in client.search_registered_models():
+    for model_info in client.search_registered_models(max_results=1000):
         model_aliases = model_info.aliases
-        if alias in model_aliases.keys():
+        if any(alias in key for key in model_aliases.keys()):
             models_with_alias.append(model_info)
 
     return models_with_alias
@@ -32,14 +34,68 @@ def extract_data(cfg, version):
     
     return sample
 
-
-def test_model(cfg, model_info, giscard_dataset):
+def test_model(client, cfg, model_info, giskard_dataset):
     # Load the model
-    model = mlflow.pytorch.load_model(model_info.latest_versions[0].source)
-    print(model)
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    model = mlflow.pytorch.load_model(model_info.latest_versions[0].source, map_location=device)
     
-    
+    def predict(df):
+        # Preprocess the data
+        X, _ = preprocess_data(df, cfg, skip_target=True)
+        
+        # Predict using the model
+        with torch.no_grad():
+            output = model(torch.tensor(X.values, dtype=torch.float32).to(device)).cpu().numpy().flatten()
+        
+        # Load the target preprocessor
+        target_preprocessor = zenml.load_artifact(name_or_id='target_preprocessor', version='1')
+        
+        # Extract the numerical transformer
+        num_transformer = target_preprocessor.transformers_[0][1]
+        
+        # Ensure output is a 2D array with shape (n_samples, n_features)
+        # If output is one-dimensional, reshape it to 2D
+        output_reshaped = output.reshape(-1, 1)  # Reshape to 2D if needed
+        
+        # Perform the inverse transformation
+        inverse_transformed_output = num_transformer.inverse_transform(output_reshaped)
+        
+        return inverse_transformed_output
+
+        
+    # print(predict(giskard_dataset.df.head()))
+    # Wrap the model
+    giskard_model = giskard.Model(
+        model=predict,
+        model_type = "regression",
+        feature_names = giskard_dataset.df.columns,
+    )
+    # Perform scan
+    scan_results = giskard.scan(giskard_model, giskard_dataset)
+    # Save the results
+    scan_results.to_html(f"reports/test_suite_{model_info.name}_testdata_version_{cfg.data_version.version}.html")
+    # Create a test suite
+    test_suite = giskard.Suite(name = f"test_suite_{model_info.name}")
+    test_r2 = giskard.testing.test_r2(model = giskard_model, 
+                                dataset = giskard_dataset,
+                                threshold=cfg.giskard.r2_threshold,
+                                debug_percent_rows = 1)
+    test_suite.add_test(test_r2)
+    # Run the test suite
+    test_results = test_suite.run()
+    print(test_results.results)
+    print(f"Model {model_info.name}:")
+    if (test_results.passed):
+        print("Passed model validation!")
+    else:
+        print("Model has vulnerabilities!")
+        
+        
 def main():
+    try:
+        mlflow.set_tracking_uri("http://localhost:5000")
+    except:
+        pass
     # Initialize the MLflow client
     client = mlflow.MlflowClient()
 
@@ -62,10 +118,10 @@ def main():
         target=TARGET_COLUMN,
         cat_columns=CATEGORICAL_COLUMNS
     )
-    
+
     # Test all the challenger models
     for model_info in models_with_challenger_alias:
-        test_model(cfg, model_info, giskard_dataset)
+        test_model(client, cfg, model_info, giskard_dataset)
     
 
 if __name__ == "__main__":

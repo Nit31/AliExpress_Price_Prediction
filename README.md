@@ -1,4 +1,5 @@
 # AliExpress_Price_Prediction
+![Test code workflow](https://github.com/<github-username>/<repo-name>/actions/workflows/test-code.yaml/badge.svg)
  Innopolis University MLOps capstone project
 
 ### How to run (for developers)

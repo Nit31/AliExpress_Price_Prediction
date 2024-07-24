@@ -1,6 +1,6 @@
-artifact_location: mlflow-artifacts:/0
-creation_time: 1720946760077
+artifact_location: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0
+creation_time: 1721840829424
 experiment_id: '0'
-last_update_time: 1720946760077
+last_update_time: 1721840829424
 lifecycle_stage: active
 name: Default

@@ -1,9 +1,9 @@
 params: {
   'hidden_dim': [ 64 ],
   'hidden_layers': [ 5 ],
-  'batch_size': [ 128 ],
+  'batch_size': [ 64 ],
   # hyperparameters to search
   'lr': [0.0001, 0.001, 0.01 ],
-  'epochs': [50, 75, 100],
+  'epochs': [40, 70, 100],
   'optimizer': ['SGD', 'Adam','RMSprop']
 }

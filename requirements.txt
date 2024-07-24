@@ -31,6 +31,7 @@ pyarrow
 # MLflow
 mlflow
 giskard==2.14.0
+hydra-joblib-launcher
 # feast
 Flask==2.2.5
 streamlit

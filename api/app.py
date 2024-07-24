@@ -4,30 +4,18 @@ import mlflow
 import mlflow.pyfunc
 import os
 import torch
+import json
+import zenml
+import hydra
+from hydra.core.global_hydra import GlobalHydra
+
 
 BASE_PATH = os.path.expandvars("$PWD")
 
-# def get_model_info(client):
-#     models = []
-#     # Search for all registered models
-#     for model_info in client.search_registered_models():
-#         models.append(model_info)
-#     return models[0]
-# client = mlflow.MlflowClient()
-# model_info = get_model_info(client)
-
 device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-model = mlflow.pytorch.load_model(f'{BASE_PATH}/mlruns/452294063850305597/a11fe7218c8742ea9e130a7b148a54a6/artifacts/models/Model_dim[512]_layers[3]_experiment/r2_score0.391447074233853_run1', 
+model = mlflow.pytorch.load_model(f'{BASE_PATH}/api/model_dir', 
                                   map_location=device)
-
-# def test_model(model_info):
-#     # Load the model
-#     print(BASE_PATH, model_info.latest_versions[0].source)
-#     model = mlflow.pytorch.load_model(model_info.latest_versions[0].source)
-#     return model
-
-# print(test_model(model_info))
 
 app = Flask(__name__)
 
@@ -40,18 +28,39 @@ def info():
   return response
 
 # /predict endpoint
-@app.route("/predict", methods = ["POST"])
+@app.route("/predict", methods=["POST"])
 def predict():
-	
-    # EDIT THIS ENDPOINT
+    content = request.data
+    decoded_string = content.decode('utf-8')
+    data = json.loads(decoded_string)
+    inputs = torch.tensor(list(data['inputs'].values()))
+    print(inputs.shape)
+    with torch.no_grad():
+        prediction = model(inputs.to(device)).cpu().numpy().flatten()
+            
+    target_preprocessor = zenml.load_artifact(name_or_id='target_preprocessor', version='1')
+    # Extract the numerical transformer
+    num_transformer = target_preprocessor.transformers_[0][1]
+    # Ensure output is a 2D array with shape (n_samples, n_features)
+    # If output is one-dimensional, reshape it to 2D
+    output_reshaped = prediction.reshape(-1, 1)  # Reshape to 2D if needed
     
-    # EXAMPLE
-	content = str(request.data)
-	response = make_response(content, 200)
-	response.headers["content-type"] = "application/json"
-	return jsonify({'result': 'yes', 'prob': '0.7'})
+    # Perform the inverse transformation
+    inverse_transformed_output = num_transformer.inverse_transform(output_reshaped)
+    response = make_response(str(inverse_transformed_output[0][0]), 200)
+    response.headers["content-type"] = "application/json"
+    return response
 
 # This will run a local server to accept requests to the API.
 if __name__ == "__main__":
-    port = int(os.environ.get('PORT', 5001))
+    
+    if GlobalHydra.instance().is_initialized():
+            print("Using existing Hydra global instance.")
+            cfg = hydra.compose(config_name="main")
+    else:
+        print("Initializing a new Hydra global instance.")
+        hydra.initialize(config_path="../configs", job_name="streamlit", version_base=None)
+        cfg = hydra.compose(config_name="main")
+        
+    port = int(os.environ.get('PORT', cfg.api_port))
     app.run(debug=True, host='0.0.0.0', port=port)

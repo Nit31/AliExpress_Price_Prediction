@@ -7,7 +7,9 @@ from data import handle_initial_data
 sample_data = {
     'id': [1, 2, 2, 3],
     'shippingCost': ['None', '10.0', '10.0', '5.0'],
-    'sold': ['100 sold', '200 sold', '200 sold', '50 sold']
+    'sold': ['100 sold', '200 sold', '200 sold', '50 sold'],
+    'rating': [1, 2, 2, 3],
+    'storeName': ['A', 'A', 'A', 'A']
 }
 sample_df = pd.DataFrame(sample_data)
 

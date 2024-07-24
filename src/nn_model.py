@@ -96,6 +96,10 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
     def score(self, X, y):
         y_pred = self.predict(X)
         return r2_score(y, y_pred)
+    
+    def to(self, device):
+        self.model.to(device)
+        
 
 
 

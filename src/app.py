@@ -1,5 +1,4 @@
 import streamlit as st
-import mlflow
 import json
 import requests
 import pandas as pd
@@ -8,6 +7,7 @@ from hydra.core.global_hydra import GlobalHydra
 from data import preprocess_data
 
 PORT_NUMBER = 5001
+
 
 def predict(title, rating, launchDate, category, sold, discount, shippingCost, type):
 
@@ -20,20 +20,22 @@ def predict(title, rating, launchDate, category, sold, discount, shippingCost, t
         "sold": sold,
         "discount": discount,
         "shippingCost": shippingCost,
-        "type": type
+        "type": type,
     }
     raw_df = pd.DataFrame(features, index=[0])
     X = preprocess_data(raw_df, skip_target=True)[0]
-    
+
     example = X.iloc[0, :]
     example = json.dumps({"inputs": example.to_dict()})
-    
+
     if GlobalHydra.instance().is_initialized():
-            print("Using existing Hydra global instance.")
-            cfg = hydra.compose(config_name="main")
+        print("Using existing Hydra global instance.")
+        cfg = hydra.compose(config_name="main")
     else:
         print("Initializing a new Hydra global instance.")
-        hydra.initialize(config_path="../configs", job_name="streamlit", version_base=None)
+        hydra.initialize(
+            config_path="../configs", job_name="streamlit", version_base=None
+        )
         cfg = hydra.compose(config_name="main")
     print(cfg)
     response = requests.post(
@@ -47,6 +49,7 @@ def predict(title, rating, launchDate, category, sold, discount, shippingCost, t
         return result
     else:
         return "Error in prediction"
+
 
 # Streamlit app setup
 st.title("AliExpress Price Prediction App")
@@ -74,5 +77,7 @@ if st.button("Get Prediction"):
     elif shippingCost < 0.0:
         st.error("Shipping cost must be non-negative")
     else:
-        prediction_result = predict(title, rating, launchDate, category, sold, discount, shippingCost, type)
+        prediction_result = predict(
+            title, rating, launchDate, category, sold, discount, shippingCost, type
+        )
         st.write("Predicted product price:", prediction_result, "dirham")

@@ -22,3 +22,15 @@ entry_points:
         type: str
         default: 'champion'
     command: "python src/evaluate.py --version {version} --alias {alias}"
+  predict:
+    parameters:
+      example_version: 
+        type: int
+        default: 2
+      port:
+        type: int
+        default: 5152
+      random_state:
+        type: int
+        default: 42
+    command: "python src/predict.py --example_version {example_version} --port {port} --random_state {random_state}"

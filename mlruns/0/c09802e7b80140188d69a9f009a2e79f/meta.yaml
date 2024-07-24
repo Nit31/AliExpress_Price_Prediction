@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/c09802e7b80140188d69a9f009a2e79f/artifacts
+end_time: 1721849466492
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: c09802e7b80140188d69a9f009a2e79f
+run_name: worried-bear-425
+run_uuid: c09802e7b80140188d69a9f009a2e79f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721849439961
+status: 3
+tags: []
+user_id: john

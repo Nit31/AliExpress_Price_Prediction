@@ -119,12 +119,6 @@ def log_metadata(cfg, models, X_train, X_test, y_train, y_test):
 def train(X_train, y_train, cfg):
     param_grid = dict(cfg.model.params)
     models = list()
-    # experiment_name = f"Model_dim{param_grid['hidden_dim']}_layers{param_grid['hidden_layers']}_experiment"
-    # try:
-    #     # Create a new MLflow Experiment
-    #     experiment_id = mlflow.create_experiment(name=experiment_name)
-    # except mlflow.exceptions.MlflowException as e:
-    #     experiment_id = mlflow.get_experiment_by_name(experiment_name).experiment_id
     for i, params in enumerate(ParameterGrid(param_grid)):
         print(f"Run {i}")
         model, mean_score = train_and_evaluate_model(params, X_train, y_train)

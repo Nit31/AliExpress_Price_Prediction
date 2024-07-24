@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/a2cb6fb647c7482c84fc78720278243f/artifacts
+end_time: 1721841903355
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: a2cb6fb647c7482c84fc78720278243f
+run_name: funny-vole-787
+run_uuid: a2cb6fb647c7482c84fc78720278243f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721841855852
+status: 4
+tags: []
+user_id: john

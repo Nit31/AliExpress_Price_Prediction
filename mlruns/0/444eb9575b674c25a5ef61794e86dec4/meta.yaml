@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/444eb9575b674c25a5ef61794e86dec4/artifacts
+end_time: 1721849330469
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 444eb9575b674c25a5ef61794e86dec4
+run_name: tasteful-donkey-476
+run_uuid: 444eb9575b674c25a5ef61794e86dec4
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721849265494
+status: 4
+tags: []
+user_id: john

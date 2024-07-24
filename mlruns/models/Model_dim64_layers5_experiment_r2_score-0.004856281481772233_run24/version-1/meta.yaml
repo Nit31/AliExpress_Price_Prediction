@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1721851358729
+current_stage: None
+description: ''
+last_updated_timestamp: 1721851358729
+name: Model_dim64_layers5_experiment_r2_score-0.004856281481772233_run24
+run_id: fad6dc6f294f402197be119667d63aea
+run_link: ''
+source: mlflow-artifacts:/554351476986166068/fad6dc6f294f402197be119667d63aea/artifacts/models/Model_dim64_layers5_experiment/r2_score-0.004856281481772233_run24
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/554351476986166068/fad6dc6f294f402197be119667d63aea/artifacts/models/Model_dim64_layers5_experiment/r2_score-0.004856281481772233_run24
+user_id: null
+version: 1

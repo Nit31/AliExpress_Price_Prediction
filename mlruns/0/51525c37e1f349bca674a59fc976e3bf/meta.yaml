@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/51525c37e1f349bca674a59fc976e3bf/artifacts
+end_time: 1721847449904
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 51525c37e1f349bca674a59fc976e3bf
+run_name: victorious-mink-792
+run_uuid: 51525c37e1f349bca674a59fc976e3bf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721847444754
+status: 4
+tags: []
+user_id: john

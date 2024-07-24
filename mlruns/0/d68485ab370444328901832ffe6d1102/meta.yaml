@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/d68485ab370444328901832ffe6d1102/artifacts
+end_time: 1721841766414
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: d68485ab370444328901832ffe6d1102
+run_name: skittish-bug-761
+run_uuid: d68485ab370444328901832ffe6d1102
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721841721224
+status: 3
+tags: []
+user_id: john

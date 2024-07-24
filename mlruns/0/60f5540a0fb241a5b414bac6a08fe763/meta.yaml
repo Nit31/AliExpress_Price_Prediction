@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/60f5540a0fb241a5b414bac6a08fe763/artifacts
+end_time: 1721847562019
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 60f5540a0fb241a5b414bac6a08fe763
+run_name: upbeat-rat-941
+run_uuid: 60f5540a0fb241a5b414bac6a08fe763
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721847557125
+status: 4
+tags: []
+user_id: john

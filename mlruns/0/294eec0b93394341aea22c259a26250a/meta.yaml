@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/294eec0b93394341aea22c259a26250a/artifacts
+end_time: 1721849568636
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 294eec0b93394341aea22c259a26250a
+run_name: delightful-fly-305
+run_uuid: 294eec0b93394341aea22c259a26250a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721849565223
+status: 4
+tags: []
+user_id: john

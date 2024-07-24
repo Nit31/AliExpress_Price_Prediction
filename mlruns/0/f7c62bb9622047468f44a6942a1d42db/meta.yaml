@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/f7c62bb9622047468f44a6942a1d42db/artifacts
+end_time: 1721841764234
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: f7c62bb9622047468f44a6942a1d42db
+run_name: auspicious-stork-493
+run_uuid: f7c62bb9622047468f44a6942a1d42db
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721841764063
+status: 3
+tags: []
+user_id: john

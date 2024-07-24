@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1721851075125
+current_stage: None
+description: ''
+last_updated_timestamp: 1721851075125
+name: Model_dim512_layers3_experiment_r2_scorenan_run6
+run_id: 05dba11921694ab5b788721e6fc60e23
+run_link: ''
+source: mlflow-artifacts:/298633671827094062/05dba11921694ab5b788721e6fc60e23/artifacts/models/Model_dim512_layers3_experiment/r2_scorenan_run6
+status: READY
+status_message: null
+storage_location: mlflow-artifacts:/298633671827094062/05dba11921694ab5b788721e6fc60e23/artifacts/models/Model_dim512_layers3_experiment/r2_scorenan_run6
+user_id: null
+version: 1

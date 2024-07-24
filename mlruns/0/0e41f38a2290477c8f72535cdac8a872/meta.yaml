@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/0e41f38a2290477c8f72535cdac8a872/artifacts
+end_time: 1721842265180
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 0e41f38a2290477c8f72535cdac8a872
+run_name: puzzled-loon-271
+run_uuid: 0e41f38a2290477c8f72535cdac8a872
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721842265015
+status: 3
+tags: []
+user_id: john

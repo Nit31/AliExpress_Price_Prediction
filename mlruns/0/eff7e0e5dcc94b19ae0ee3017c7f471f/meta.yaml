@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/eff7e0e5dcc94b19ae0ee3017c7f471f/artifacts
+end_time: 1721841258985
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: eff7e0e5dcc94b19ae0ee3017c7f471f
+run_name: unequaled-conch-776
+run_uuid: eff7e0e5dcc94b19ae0ee3017c7f471f
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721840990507
+status: 4
+tags: []
+user_id: john

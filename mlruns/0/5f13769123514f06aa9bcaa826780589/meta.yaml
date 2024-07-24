@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/5f13769123514f06aa9bcaa826780589/artifacts
+end_time: 1721843808428
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 5f13769123514f06aa9bcaa826780589
+run_name: big-stork-739
+run_uuid: 5f13769123514f06aa9bcaa826780589
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721843808074
+status: 3
+tags: []
+user_id: john

@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/6a46ad1b636d408dadfa0bc0ca8b81c9/artifacts
+end_time: 1721851494893
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 6a46ad1b636d408dadfa0bc0ca8b81c9
+run_name: nervous-deer-455
+run_uuid: 6a46ad1b636d408dadfa0bc0ca8b81c9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721851444725
+status: 3
+tags: []
+user_id: john

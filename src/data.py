@@ -421,12 +421,7 @@ def preprocess_data(df: pd.DataFrame, cfg=None, skip_target=False):
     )
     df_transformed = pd.DataFrame(X_transformed, columns=all_feature_names)
 
-    # Preprocess text feature
-    # model_name = 'roberta-base'
-
     print(device)
-    # model = RobertaModel.from_pretrained(model_name).to(device)
-    # model.eval()
     embeddings = generate_embeddings(X["title"], roberta_model, device)
     title_feature_name = [f"title_{i}" for i in range(embeddings.shape[1])]
     df_titles = pd.DataFrame(embeddings.numpy(), columns=title_feature_name)

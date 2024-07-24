@@ -69,18 +69,16 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
         self._initialize_optimizer()
 
     def _initialize_optimizer(self):
-        if self.optimizer == "Adam":
-            self.optimizer_ = optim.Adam(self.model.parameters(), lr=self.lr)
-        elif self.optimizer == "SGD":
-            self.optimizer_ = optim.SGD(
-                self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=1e-4
-            )
-        elif self.optimizer == "RMSprop":
-            self.optimizer_ = optim.RMSprop(
-                self.model.parameters(), lr=self.lr, alpha=0.99, eps=1e-8
-            )
+        if hasattr(optim, self.optimizer):
+            optimizer_class = getattr(optim, self.optimizer)
+            if self.optimizer == "SGD":
+                self.optimizer_ = optimizer_class(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=1e-4)
+            elif self.optimizer == "RMSprop":
+                self.optimizer_ = optimizer_class(self.model.parameters(), lr=self.lr, alpha=0.99, eps=1e-8)
+            else:
+                self.optimizer_ = optimizer_class(self.model.parameters(), lr=self.lr)
         else:
-            self.optimizer_ = optim.Adam(self.model.parameters(), lr=self.lr)
+            raise ValueError(f"Optimizer {self.optimizer} is not supported")
 
     def fit(self, X, y):
         self._initialize_model()

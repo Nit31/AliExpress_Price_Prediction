@@ -1,18 +1,8 @@
 import pandas as pd
 from typing_extensions import Tuple, Annotated
 from zenml import step, pipeline, ArtifactConfig
-# FIXME:
-from pathlib import Path
-current_dir = Path(__file__).resolve().parent
-
-# FIXME:
-# Go up two levels to get the parent directory (which contains 'src')
-# import sys
-# Add the 'src' folder to the Python path
-# src_path = '.'
-# sys.path.append(str(src_path))
-# from src import data
 import data
+
 @step(enable_cache=False)
 def extract()-> Tuple[
     Annotated[pd.DataFrame,

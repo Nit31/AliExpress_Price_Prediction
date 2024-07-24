@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/972597f7b7804f69b642be142c59a43a/artifacts
+end_time: 1721851686531
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 972597f7b7804f69b642be142c59a43a
+run_name: silent-wren-642
+run_uuid: 972597f7b7804f69b642be142c59a43a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721851637750
+status: 3
+tags: []
+user_id: john

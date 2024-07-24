@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/4a205910ece042b3a4f8966c1590964a/artifacts
+end_time: 1721840962989
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 4a205910ece042b3a4f8966c1590964a
+run_name: bald-crab-805
+run_uuid: 4a205910ece042b3a4f8966c1590964a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721840915955
+status: 4
+tags: []
+user_id: john

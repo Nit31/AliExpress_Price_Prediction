@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/f666f5e840764263b778a8ba4f6f7d56/artifacts
+end_time: 1721843950925
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: f666f5e840764263b778a8ba4f6f7d56
+run_name: serious-cod-414
+run_uuid: f666f5e840764263b778a8ba4f6f7d56
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721843950541
+status: 3
+tags: []
+user_id: john

@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/ddfcf7de2b864c4a808108958b2969b5/artifacts
+end_time: 1721847434084
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: ddfcf7de2b864c4a808108958b2969b5
+run_name: worried-bug-754
+run_uuid: ddfcf7de2b864c4a808108958b2969b5
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721847428978
+status: 4
+tags: []
+user_id: john

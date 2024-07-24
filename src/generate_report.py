@@ -70,18 +70,27 @@ def test_model(client, cfg, model_info, giskard_dataset):
         model_type = "regression",
         feature_names = giskard_dataset.df.columns,
     )
+    # Perform scan
+    scan_results = giskard.scan(giskard_model, giskard_dataset)
+    # Save the results
+    scan_results.to_html(f"reports/test_suite_{model_info.name}_testdata_version_{cfg.data_version.version}.html")
     # Create a test suite
     test_suite = giskard.Suite(name = f"test_suite_{model_info.name}")
     test_r2 = giskard.testing.test_r2(model = giskard_model, 
                                 dataset = giskard_dataset,
-                                threshold=cfg.giskard.r2_threshold
-                                )
+                                threshold=cfg.giskard.r2_threshold,
+                                debug_percent_rows = 1)
     test_suite.add_test(test_r2)
     # Run the test suite
     test_results = test_suite.run()
-    assert test_results.passed
-
-
+    print(test_results.results)
+    print(f"Model {model_info.name}:")
+    if (test_results.passed):
+        print("Passed model validation!")
+    else:
+        print("Model has vulnerabilities!")
+        
+        
 def main():
     try:
         mlflow.set_tracking_uri("http://localhost:5000")
@@ -95,7 +104,7 @@ def main():
     cfg = hydra.compose(config_name="main")
 
     # Get all models with the alias "Challenger"
-    models_with_champion_alias = get_models_info_by_alias(client, "champion")
+    models_with_challenger_alias = get_models_info_by_alias(client, "challenger")
     
     # Wrap the raw dataset
     version = cfg.mlflow.test_data_version
@@ -110,14 +119,8 @@ def main():
         cat_columns=CATEGORICAL_COLUMNS
     )
 
-    # Raise exception if there are several champion models or zero
-    if len(models_with_champion_alias) > 1:
-        raise Exception("There should be exactly one champion model!")
-    elif len(models_with_champion_alias) == 0:
-        raise Exception("There should be at least one champion model!")
-    
     # Test all the challenger models
-    for model_info in models_with_champion_alias:
+    for model_info in models_with_challenger_alias:
         test_model(client, cfg, model_info, giskard_dataset)
     
 

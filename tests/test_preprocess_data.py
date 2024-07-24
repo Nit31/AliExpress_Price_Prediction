@@ -1,47 +1,60 @@
-# import pytest
-# import pandas as pd
-# from unittest.mock import patch, MagicMock
-# from data import preprocess_data  # Replace 'your_module' with the actual module name
+import pytest
+import pandas as pd
+from unittest.mock import MagicMock
+from datetime import datetime
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from sklearn.compose import ColumnTransformer
+import torch
+from transformers import RobertaModel
+from data import preprocess_data  # Replace with the actual module name
 
-# # Mock data for testing
-# @pytest.fixture
-# def mock_data():
-#     return pd.DataFrame({
-#         'sold': [15, 20, 5, 6, 11],
-#         'rating': [4.5, 4.0, 0.0, 3.5, 5.0],
-#         'storeName': ['Store A', 'Store A', 'Store B', 'Store A', 'Store C'],
-#         'lunchTime': ['2022-01-01 12:00:00'] * 5,
-#         'type': ['A', 'B', 'A', 'C', 'B'],
-#         'category_name': ['Cat1', 'Cat2', 'Cat1', 'Cat3', 'Cat2'],
-#         'price': [10, 20, 30, 40, 50],
-#         'title': ['Title 1', 'Title 2', 'Title 3', 'Title 4', 'Title 5']
-#     })
+# Mock configuration class to simulate the expected 'cfg' structure
+class MockConfig:
+    class zenml:
+        class features:
+            target = 'target'
+            all = ['feature1', 'feature2', 'year', 'month', 'type', 'category_name', 'title']
+            numerical = ['feature1', 'feature2']
 
-# # Mocking external dependencies
-# @patch('data.hydra')
-# @patch('data.zenml')
-# @patch('data.RobertaModel')
-# @patch('data.generate_embeddings')
-# def test_preprocess_data(mock_generate_embeddings, mock_RobertaModel, mock_zenml, mock_hydra, mock_data):
+    data_version = MagicMock(version=1)  # Set the version to 1
+
+# Sample DataFrame for testing
+@pytest.fixture
+def sample_df():
+    return pd.DataFrame({
+        'lunchTime': ['2023-01-01 12:30:00', '2023-01-02 13:30:00'],
+        'feature1': [10, 20],
+        'feature2': [1.5, 2.5],
+        'type': ['A', 'B'],
+        'category_name': ['cat1', 'cat2'],
+        'target': [100, 200],
+        'title': ['Title 1', 'Title 2']
+    })
+
+# Mock function to simulate the generate_embeddings function
+def mock_generate_embeddings(titles, model, device):
+    return torch.tensor([[0.1, 0.2], [0.3, 0.4]])  # Mocking embeddings
+
+# Tests for preprocess_data function
+def test_preprocess_data_with_target(sample_df):
+    cfg = MockConfig()
+    global generate_embeddings
+    generate_embeddings = mock_generate_embeddings  # Substitute the actual function with the mock
     
-#     # Configure mocks
-#     mock_hydra.compose.return_value.features.all = ['sold', 'rating', 'storeName', 'lunchTime', 'type', 'category_name']
-#     mock_hydra.compose.return_value.features.target = 'price'
-#     mock_hydra.compose.return_value.features.numerical = ['sold', 'rating']
-    
-#     mock_zenml.load_artifact.side_effect = [None, None]  # Simulate that no artifacts are loaded
-#     mock_generate_embeddings.return_value = MagicMock()  
-#     mock_generate_embeddings.return_value.numpy.return_value = [[1.0, 2.0, 3.0]]  # Example output shape
+    with MagicMock() as mock_zenml:
+        mock_zenml.load_artifact = MagicMock(side_effect=[None, None, None])  # Load preprocessor, target_preprocessor, roberta_model
+        mock_zenml.save_artifact = MagicMock()
+        preprocess_data.__globals__['zenml'] = mock_zenml  # Allow the function to access the mock
 
-#     # Call the preprocessing function
-#     df_transformed, y_df = preprocess_data(mock_data)  # Call the fixture directly
-    
-#     # Assertions
-#     assert df_transformed is not None
-#     assert isinstance(df_transformed, pd.DataFrame)
-#     assert not df_transformed.empty
-#     assert 'title_0' in df_transformed.columns  # Check if title embeddings are added
-#     assert len(y_df) == 5  # Check if target variable size matches input size
-#     assert (df_transformed.shape[1] > 0)  # Ensure some features are created
+        df_transformed, y_transformed = preprocess_data(sample_df, cfg, skip_target=False)
 
-# # To run tests, use the command: pytest -v
+        # Check the transformed DataFrame structure
+        assert df_transformed is not None
+        assert isinstance(df_transformed, pd.DataFrame)
+
+        # Test if the target is transformed and included
+        assert y_transformed is not None
+        assert isinstance(y_transformed, pd.DataFrame)
+        assert y_transformed.shape[1] == 1  # One column for the target
+        assert 'price' in y_transformed.columns

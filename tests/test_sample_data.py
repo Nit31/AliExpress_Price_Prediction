@@ -13,11 +13,11 @@ db_main_data = config_main_data["db"]
 
 # Generate the testdata list for @pytest.mark.parametrize
 testdata = [
-    (db_main_data["db_creator"], db_main_data["db_name"], db_main_data["sample_path"], db_main_data['data_path'], db_main_data["kaggle_filename"], config_main_data['dvc']['data_version_yaml_path'], 3)
+    (db_main_data["db_creator"], db_main_data["db_name"], db_main_data["sample_path"], db_main_data['data_path'], db_main_data["kaggle_filename"], config_main_data['dvc']['data_version_yaml_path'], 3, 42)
 ]
 
-@pytest.mark.parametrize("db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path, data_version", testdata)
-def test_sample_data(db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path, data_version):
+@pytest.mark.parametrize("db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path, data_version, seed", testdata)
+def test_sample_data(db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path, data_version, seed):
     cfg = types.SimpleNamespace(
         db = types.SimpleNamespace(
             db_creator = db_creator,
@@ -31,6 +31,9 @@ def test_sample_data(db_creator, db_name, sample_path, data_path, kaggle_filenam
         ),
         data_version = types.SimpleNamespace(
             version = data_version
+        ),
+        experiment = types.SimpleNamespace(
+            random_state = seed
         ),
     )
     print(cfg.db)  # Call the function with the test configuration

@@ -11,6 +11,8 @@ import subprocess
 from git import Repo
 warnings.filterwarnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
+from hydra.core.global_hydra import GlobalHydra
+
 
 
 # Define the default arguments
@@ -122,8 +124,16 @@ with DAG(
     description='An automated workflow for data extraction, validation, versioning, and loading',
 ) as dag:
     # Initialize Hydra and load the config
-    hydra.initialize(config_path="../../../configs", job_name="data_extract_dag")
-    cfg = hydra.compose(config_name="main")
+    # hydra.initialize(config_path="../../../configs", job_name="data_extract_dag")
+    # cfg = hydra.compose(config_name="main")
+
+    if GlobalHydra.instance().is_initialized():
+        print("Using existing Hydra global instance.")
+        cfg = hydra.compose(config_name="main")
+    else:
+        print("Initializing a new Hydra global instance.")
+        hydra.initialize(config_path="../../../configs", job_name="preprocess_data", version_base=None)
+        cfg = hydra.compose(config_name="main")
 
     # Define a PythonOperator to execute the load_and_execute_sample_data function
     extract_sample_task = PythonOperator(

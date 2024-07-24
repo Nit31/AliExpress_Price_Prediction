@@ -360,6 +360,57 @@ def preprocess_data(df: pd.DataFrame):
     return df_transformed, y_df
 
 
+def preprocess_data_from_web(df: pd.DataFrame):
+    # Adding configuration for preprocessing
+    hydra.core.global_hydra.GlobalHydra.instance().clear()
+    hydra.initialize(config_path="../configs", job_name="preprocess_data", version_base=None)
+    cfg = hydra.compose(config_name="main")
+    X = df
+    # Convert Date to year, month, and day
+    X['year'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').year).astype(str)
+    X['month'] = X['lunchTime'].apply(lambda date: datetime.strptime(date.split()[0], '%Y-%m-%d').month)
+    X = X.drop(columns=['lunchTime'])
+    X = X[list(cfg.zenml.features.all)]
+
+    numerical_features = list(cfg.zenml.features.numerical)
+    preprocessor = zenml.load_artifact(name_or_id='preprocessor', version='1')
+
+    device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
+    # try:
+    roberta_model = zenml.load_artifact(name_or_id='roberta_model', version='1')
+    # except:
+    #     roberta_model = None
+    # if roberta_model is None:
+    #     print('Doesn\'t find roberta. Creating...')
+    #     model_name = 'roberta-base'
+    #     roberta_model = RobertaModel.from_pretrained(model_name).to(device)
+    #     roberta_model.eval()
+    #     zenml.save_artifact(roberta_model,name='roberta_model',version='1')
+    # Create the pipeline with the preprocessor
+    pipeline = Pipeline(steps=[
+        ('preprocessor', preprocessor)
+    ])
+    X_transformed = pipeline.fit_transform(X)
+    
+    # Convert transformed data back to the dataframe
+    num_features_names = numerical_features
+    type_features_names = preprocessor.named_transformers_['cat']['onehot'].get_feature_names_out(['type'])
+    all_feature_names = list(num_features_names) + list(type_features_names) + list([f'month_{i}' for i in range(12)]) + list([f'year_{i}' for i in range(6)]) + list([f'cn_{i}' for i in range(9)])
+    df_transformed = pd.DataFrame(X_transformed, columns=all_feature_names)
+    
+    # Preprocess text feature
+    #model_name = 'roberta-base'
+
+    print(device)
+    embeddings = generate_embeddings(X['title'], roberta_model,device)
+    title_feature_name = [f'title_{i}' for i in range(embeddings.shape[1])]
+    df_titles = pd.DataFrame(embeddings.numpy(), columns=title_feature_name)
+    df_transformed = pd.concat([df_transformed,df_titles],axis=1)
+    del roberta_model
+    torch.cuda.empty_cache()
+    # df_transformed.to_csv('test.csv')
+    return df_transformed
+
 def validate_features(X,y):
     # Create or open a data context
     try:

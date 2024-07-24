@@ -32,6 +32,7 @@ mlflow
 giskard==2.14.0
 # feast
 Flask==2.2.5
+streamlit
 # pendulum
 # shyaml
 # evidently

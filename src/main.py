@@ -163,7 +163,7 @@ def log_charts(experiment_name, cfg=None):
             # Log the plot to MLflow within the context of the current run
             with mlflow.start_run(run_id=run_id, nested=True):
                 mlflow.log_figure(plt.gcf(), f'{run.info.run_name}_metrics_plot.png')
-                plt.savefig(f'results/{run.info.run_name}_metrics_plot.png')
+                plt.savefig(f'results/{experiment_name}_{run.info.run_name}_metrics_plot.png')
             plt.close()
 
     # Convert the collected metrics data to a DataFrame

@@ -13,3 +13,12 @@ entry_points:
     command: "python pipelines/data_prepare.py"
   extract:
     command: "airflow dags test data_extract_dag"
+  evaluate:
+    parameters:
+      version: 
+        type: int
+        default: 1
+      alias:
+        type: str
+        default: 'champion'
+    command: "python src/evaluate.py --version {version} --alias {alias}"

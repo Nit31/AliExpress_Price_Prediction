@@ -1,6 +1,2 @@
 data_version:
-<<<<<<< HEAD
-  version: 3
-=======
-  version: 1
->>>>>>> b33594fedf67204cafe75b83b5d0bd1be0d33e25
+  version: 4

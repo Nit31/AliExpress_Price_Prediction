@@ -15,6 +15,10 @@ entry_points:
     command: "airflow dags test data_extract_dag"
   evaluate:
     parameters:
-      version: {type: int, default: 1}
-      alias: {type: str, default: 'champion'}
-    command: "python src/evaluate.py --version {version} --alias '{alias}'"
+      version: 
+        type: int
+        default: 1
+      alias:
+        type: str
+        default: 'champion'
+    command: "python src/evaluate.py --version {version} --alias {alias}"

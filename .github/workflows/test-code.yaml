@@ -117,4 +117,4 @@ jobs:
         
       # Run pytest on tests folder
       - name: Test with pytest
-        run: pytest tests
+        run: pytest

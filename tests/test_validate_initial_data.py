@@ -3,7 +3,7 @@ import pandas as pd
 import great_expectations as gx
 from great_expectations.data_context import FileDataContext
 from unittest.mock import patch, MagicMock
-from data import validate_initial_data
+from src.data import validate_initial_data
 
 @pytest.fixture
 def sample():

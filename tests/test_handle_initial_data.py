@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 import numpy as np
-from data import handle_initial_data
+from src.data import handle_initial_data
 
 # Sample data for testing
 sample_data = {

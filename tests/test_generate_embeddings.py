@@ -3,7 +3,7 @@ import pandas as pd
 import torch
 from torch.utils.data import DataLoader
 from transformers import RobertaTokenizer, RobertaModel
-from data import generate_embeddings
+from src.data import generate_embeddings
 
 # Sample data for testing
 sample_texts = pd.Series(["Hello world!", "This is a test.", "Generating embeddings for testing."])

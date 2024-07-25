@@ -1,6 +1,6 @@
 import pandas as pd
 import pytest
-from data import TextDataset
+from src.data import TextDataset
 
 # Test each method of the class
 

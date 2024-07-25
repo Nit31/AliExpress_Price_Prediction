@@ -19,6 +19,7 @@ import zenml
 import numpy as np
 from category_encoders import BinaryEncoder
 from sklearn.base import BaseEstimator, TransformerMixin
+import joblib
 
 
 class TextDataset(Dataset):
@@ -292,10 +293,18 @@ def preprocess_data(df: pd.DataFrame, cfg=None, skip_target=False):
     if not skip_target:
         y = df[[cfg.zenml.features.target]]
     numerical_features = list(cfg.zenml.features.numerical)
+    
+    # Load preprocessor
     try:
         preprocessor = zenml.load_artifact(name_or_id="preprocessor", version="1")
     except Exception:
         preprocessor = None
+    
+    try:
+        preprocessor = joblib.load("preprocessors/preprocessor.pkl")
+    except Exception:
+        pass
+    
     if preprocessor is None:
         if cfg.data_version.version != 1 or skip_target:
             raise ValueError(
@@ -354,8 +363,9 @@ def preprocess_data(df: pd.DataFrame, cfg=None, skip_target=False):
         # Fit the preprocessor
         preprocessor.fit(X)
 
+        # Save the preprocessor
+        joblib.dump(preprocessor, "preprocessors/preprocessor.pkl")
         zenml.save_artifact(preprocessor, name="preprocessor", version="1")
-
     try:
         target_preprocessor = zenml.load_artifact(
             name_or_id="target_preprocessor", version="1"
@@ -363,6 +373,12 @@ def preprocess_data(df: pd.DataFrame, cfg=None, skip_target=False):
     except Exception as e:
         print(e)
         target_preprocessor = None
+        
+    try:
+        target_preprocessor = joblib.load("preprocessors/target_preprocessor.pkl")
+    except Exception:
+        pass
+    
     if target_preprocessor is None:
         # If there is no preprocessor, and the sample version is not 1, then raise error
         if cfg.data_version.version != 1:
@@ -384,7 +400,9 @@ def preprocess_data(df: pd.DataFrame, cfg=None, skip_target=False):
         )
         # Fit the pipeline on the training data
         target_preprocessor = target_preprocessor.fit(y)
-        # Save the preprocessor
+        
+        # Save the target preprocessor
+        joblib.dump(preprocessor, "preprocessors/target_preprocessor.pkl")
         zenml.save_artifact(
             target_preprocessor, name="target_preprocessor", version="1"
         )

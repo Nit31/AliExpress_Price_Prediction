@@ -9,6 +9,7 @@ from data import (
 import giskard
 import torch
 import zenml
+import joblib
 
 
 def get_models_info_by_alias(client, alias):
@@ -59,12 +60,20 @@ def test_model(client, cfg, model_info, giskard_dataset):
                 .numpy()
                 .flatten()
             )
-
+        
         # Load the target preprocessor
-        target_preprocessor = zenml.load_artifact(
-            name_or_id="target_preprocessor", version="1"
-        )
-
+        try:
+            target_preprocessor = zenml.load_artifact(
+                name_or_id="target_preprocessor", version="1"
+            )
+        except Exception:
+            pass
+        
+        try:
+            target_preprocessor = joblib.load("preprocessors/target_preprocessor.pkl")
+        except Exception:
+            pass
+        
         # Extract the numerical transformer
         num_transformer = target_preprocessor.transformers_[0][1]
 

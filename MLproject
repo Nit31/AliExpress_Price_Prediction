@@ -1,0 +1,44 @@
+# MLproject
+
+name: Aliexpress_Price_Prediction
+
+# python_env: python_env.yaml
+
+entry_points:
+  main:
+    command: "python src/main.py --multirun"
+
+  validate:
+    command: "python src/validate.py"
+
+  transform:
+    command: "python pipelines/data_prepare.py"
+
+  extract:
+    command: "airflow dags test data_extract_dag"
+
+  evaluate:
+    parameters:
+      version: 
+        type: int
+        default: 1
+      alias:
+        type: str
+        default: 'champion'
+    command: "python src/evaluate.py --version {version} --alias {alias}"
+
+  predict:
+    parameters:
+      example_version: 
+        type: int
+        default: 2
+      port:
+        type: int
+        default: 5152
+      random_state:
+        type: int
+        default: 42
+    command: "python src/predict.py --example_version {example_version} --port {port} --random_state {random_state}"
+  
+  deploy:
+    command: "sh scripts/deploy_docker.sh"

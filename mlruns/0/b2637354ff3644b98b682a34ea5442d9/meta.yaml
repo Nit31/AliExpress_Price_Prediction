@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/b2637354ff3644b98b682a34ea5442d9/artifacts
+end_time: 1721848175496
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: b2637354ff3644b98b682a34ea5442d9
+run_name: nimble-tern-35
+run_uuid: b2637354ff3644b98b682a34ea5442d9
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721848172590
+status: 4
+tags: []
+user_id: john

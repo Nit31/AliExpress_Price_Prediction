@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/bf8c093a6c0d4394a857bc440b152063/artifacts
+end_time: 1721851377428
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: bf8c093a6c0d4394a857bc440b152063
+run_name: caring-vole-903
+run_uuid: bf8c093a6c0d4394a857bc440b152063
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721851377047
+status: 3
+tags: []
+user_id: john

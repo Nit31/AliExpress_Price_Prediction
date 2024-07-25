@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/89e07b7c42614a16b183f512d461e6af/artifacts
+end_time: 1721846795154
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 89e07b7c42614a16b183f512d461e6af
+run_name: enthused-grub-769
+run_uuid: 89e07b7c42614a16b183f512d461e6af
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721846790160
+status: 4
+tags: []
+user_id: john

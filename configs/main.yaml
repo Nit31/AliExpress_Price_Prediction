@@ -1,6 +1,36 @@
+defaults:
+  - _self_  
+  - zenml
+  - experiment
+  - data_version
+  - model/model
+  - zenml
+  - giskard
+  - api
+  - override hydra/launcher: joblib
+  
+
+hydra:
+  launcher:
+    n_jobs: 2
+  mode: MULTIRUN
+  sweeper:
+    params:
+      +model: "model2, model1"
+
 db:
   db_creator: abdullahbuzaid
   db_name: ali-express-data
-  sample_part: 1
-  sample_path: ./data/samples/sample.csv
+  sample_path: data/samples/sample.csv
+  data_path: data/raw.csv
   kaggle_filename: raw
+
+dvc:
+  sample_info_path: data/samples/sample.csv.dvc
+  data_version_yaml_path: configs/data_version.yaml
+
+mlflow:
+  train_val_data_version: 1
+  test_data_version: 2
+  #train_size: 1
+  test_size: 0.5

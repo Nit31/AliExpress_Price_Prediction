@@ -1,5 +1,3 @@
-# Ignore all files
-*
-
-# Allow .gitignore
-!.gitignore
+/uncommitted
+uncommitted/
+validator_checkpoint.yaml

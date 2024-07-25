@@ -5,6 +5,8 @@ __pycache__/
 *.py[cod]
 *$py.class
 
+*.log
+
 # C extensions
 *.so
 
@@ -163,3 +165,13 @@ cython_debug/
 
 # .csv files
 *.csv
+
+*.zip
+/.zen
+/services/gx/checkpoints
+.zen/config.yaml
+services/gx/checkpoints/validator_checkpoint.yml
+services/gx/great_expectations.yml
+/multirun
+.zen/config.yaml
+services/gx/checkpoints/validator_checkpoint.yml

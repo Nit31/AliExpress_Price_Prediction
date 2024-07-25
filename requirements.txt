@@ -1,6 +1,7 @@
 numpy
 pandas
 matplotlib
+seaborn
 hydra-core
 omegaconf
 dvc
@@ -11,3 +12,22 @@ transformers
 tqdm
 pytest
 great_expectations
+category_encoders
+
+# Apache Airflow & zenml
+graphviz
+kubernetes
+apache-airflow==2.7.3
+flask-appbuilder
+pydantic
+apache-airflow-providers-cncf-kubernetes
+psycopg2
+virtualenv
+zenml[server]==0.58.2
+Flask-Session==0.5.0
+pyarrow
+mlflow
+giskard==2.14.0
+Flask==2.2.5
+streamlit
+hydra-joblib-launcher

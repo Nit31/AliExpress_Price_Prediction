@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/412abc99f37d4162b43b8fadd74a933c/artifacts
+end_time: 1721847240165
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 412abc99f37d4162b43b8fadd74a933c
+run_name: salty-owl-683
+run_uuid: 412abc99f37d4162b43b8fadd74a933c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721847234876
+status: 4
+tags: []
+user_id: john

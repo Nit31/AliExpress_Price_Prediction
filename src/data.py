@@ -1,12 +1,68 @@
 import os
+from datetime import datetime
 import pandas as pd
 import hydra
-from omegaconf import DictConfig, OmegaConf
+from hydra.core.global_hydra import GlobalHydra
+from omegaconf import DictConfig
 import yaml
 import great_expectations as gx
 from great_expectations.data_context import FileDataContext
 import warnings
-warnings.filterwarnings("ignore", category=DeprecationWarning)
+from sklearn.compose import ColumnTransformer
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler, OneHotEncoder
+from transformers import RobertaTokenizer, RobertaModel
+import torch
+from torch.utils.data import DataLoader, Dataset
+from tqdm import tqdm
+import zenml
+import numpy as np
+from category_encoders import BinaryEncoder
+from sklearn.base import BaseEstimator, TransformerMixin
+
+
+class TextDataset(Dataset):
+    def __init__(self, text_series):
+        self.text_series = text_series
+
+    def __len__(self):
+        return len(self.text_series)
+
+    def __getitem__(self, idx):
+        return self.text_series.iloc[idx]
+
+
+def collate_fn(batch):
+    tokenizer = RobertaTokenizer.from_pretrained("roberta-base")
+    return tokenizer(
+        batch, return_tensors="pt", padding=True, truncation=True, max_length=512
+    )
+
+
+def generate_embeddings(text_series, model, device, batch_size=512):
+    # Create DataLoader
+    dataset = TextDataset(text_series)
+    dataloader = DataLoader(dataset, batch_size=batch_size, collate_fn=collate_fn)
+
+    embeddings_list = []
+
+    # Generate embeddings in batches
+    with torch.no_grad():
+        for batch in tqdm(dataloader):
+            torch.cuda.empty_cache()
+
+            input_ids = batch["input_ids"].to(device)
+            attention_mask = batch["attention_mask"].to(device)
+            outputs = model(input_ids, attention_mask=attention_mask)
+            embeddings = outputs.last_hidden_state.mean(
+                dim=1
+            ).cpu()  # Take the mean of the last hidden states
+            embeddings_list.append(embeddings)
+
+    # Concatenate all batch embeddings
+    embeddings = torch.cat(embeddings_list, dim=0)
+
+    return embeddings
 
 
 def sample_data(cfg):
@@ -20,62 +76,71 @@ def sample_data(cfg):
     with open("configs/confidential.yaml", "r") as stream:
         config_confidential_data = yaml.safe_load(stream)
 
-    kaggle_data = config_confidential_data['kaggle']
+    # Try to open the local copy of raw data
+    try:
+        df = pd.read_csv(cfg.db.data_path)
+        print("Dataset local cache is detected.")
+    # In case of failure, download the raw data from kaggle
+    except Exception:
+        print("Dataset local cache not detected. Downloading...")
+        kaggle_data = config_confidential_data["kaggle"]
 
-    os.environ['KAGGLE_USERNAME'] = kaggle_data['kaggle_username']
-    os.environ['KAGGLE_KEY'] = kaggle_data['kaggle_key']
+        os.environ["KAGGLE_USERNAME"] = kaggle_data["kaggle_username"]
+        os.environ["KAGGLE_KEY"] = kaggle_data["kaggle_key"]
 
-    # We need to import API library after setting up environmental variables
-    # if the order will be changed, API will not work properly
-    from kaggle.api.kaggle_api_extended import KaggleApi
+        # We need to import API library after setting up environmental variables
+        # if the order will be changed, API will not work properly
+        from kaggle.api.kaggle_api_extended import KaggleApi
 
-    def download_kaggle_dataset(dataset_name, output_dir):
-        """Function to download Kaggle dataset using API
-        Args:
-            dataset_name (_type_): _description_
-            output_dir (_type_): _description_
-        """
-        api = KaggleApi()
-        api.authenticate()  # Make sure to set up your Kaggle API authentication as mentioned in the previous messages
+        def download_kaggle_dataset(dataset_name, output_dir):
+            """Function to download Kaggle dataset using API
+            Args:
+                dataset_name (_type_): _description_
+                output_dir (_type_): _description_
+            """
+            api = KaggleApi()
+            api.authenticate()  # Make sure to set up your Kaggle API authentication as mentioned in the previous messages
 
-        try:
-            api.dataset_download_files(dataset_name, path=output_dir, unzip=True)
-            print("Dataset downloaded successfully to:", output_dir)
-        except Exception as e:
-            print("Error downloading dataset:", str(e))
+            try:
+                api.dataset_download_files(dataset_name, path=output_dir, unzip=True)
+                print("Dataset downloaded successfully to:", output_dir)
+            except Exception as e:
+                print("Error downloading dataset:", str(e))
 
-    dataset_name = f'{cfg.db.db_creator}/{cfg.db.db_name}'  # Replace with the actual Kaggle dataset name
-    output_directory = "."  # Specify where you want to download the dataset__
+        dataset_name = f"{cfg.db.db_creator}/{cfg.db.db_name}"  # Replace with the actual Kaggle dataset name
+        output_directory = "."  # Specify where you want to download the dataset__
 
-    download_kaggle_dataset(dataset_name, output_directory)
+        download_kaggle_dataset(dataset_name, output_directory)
 
-    # Convert downloaded CSV to Pandas DataFrame
-    df = pd.read_csv(f'{cfg.db.kaggle_filename}_csv.csv')
+        # Convert downloaded CSV to Pandas DataFrame
+        df = pd.read_csv(f"{cfg.db.kaggle_filename}_csv.csv")
 
-    # Remove temporary file
-    os.remove(f'{cfg.db.kaggle_filename}_csv.csv')
-    os.remove(f'{cfg.db.kaggle_filename}_json.json')
-    
-    # Number of sample part that we need(can be changed in config/main.yaml)
-    number_of_sample = cfg.db.sample_part
-    df_sortes = df.sort_values(by=['lunchTime'])
-    if number_of_sample not in [1, 2, 3, 4, 5]:
-        print('Number of the sample should be < that 6 and > 0')
+        # Save the raw dataset
+        df.to_csv(cfg.db.data_path)
+
+        # Remove temporary file
+        os.remove(f"{cfg.db.kaggle_filename}_csv.csv")
+        os.remove(f"{cfg.db.kaggle_filename}_json.json")
+
+    df = handle_initial_data(df)
+    df = df.sample(frac=1, random_state=cfg.experiment.random_state)
+    if not 1 <= cfg.data_version.version <= 5:
+        print("Sample_part is out of range")
         exit(0)
-    if number_of_sample not in [1, 2, 3, 4, 5]:
-        print('Number of the sample should be < that 6 and > 0')
-        exit(0)
-    df_sample = df_sortes[(len(df_sortes) // 5) * (number_of_sample - 1):(len(df_sortes) // 5) * (number_of_sample)]
-    df_sample.to_csv(cfg.db.sample_path)
+    df_sample = df[
+        (len(df) // 5)
+        * (cfg.data_version.version - 1) : (len(df) // 5)
+        * (cfg.data_version.version)
+    ]
+    return df_sample
 
 
-def handle_initial_data(cfg):
+def handle_initial_data(sample):
     """
     This function cleans the raw data.
     """
-
-    df = pd.read_csv(cfg.db.sample_path)
-    df = df.drop_duplicates(['id'])
+    df = sample
+    df = df.drop_duplicates(["id"])
 
     def clean_sold(sold_data: str) -> int:
         try:
@@ -84,34 +149,38 @@ def handle_initial_data(cfg):
             sold_count = sold_data
         return int(sold_count)
 
-    df['sold'] = df['sold'].apply(clean_sold)
-    df.to_csv(cfg.db.sample_path, index=False)
+    df["shippingCost"] = df["shippingCost"].replace("None", np.nan).astype(float)
+    mean_shipping_cost = df["shippingCost"].mean()
+    df["shippingCost"].fillna(mean_shipping_cost, inplace=True)
+    df["sold"] = df["sold"].apply(clean_sold)
+
+    # FIXME:
+    df = df[(df["sold"] > 30) & (df["rating"] > 0)]
+    df = df[df["storeName"].map(df["storeName"].value_counts()) > 3]
+    return df
 
 
-def validate_initial_data(cfg):
+def validate_initial_data(cfg, sample):
     """This function declares expectations about the data features and validates them.
     Returns:
         result (bool): Status of data validation.
     """
+    os.environ["HYDRA_FULL_ERROR"] = "1"
     # Create or open a data context
     try:
-        context = gx.get_context(context_root_dir = "services/gx")
-    except Exception as e:
-        context = FileDataContext(context_root_dir = "services/gx")
+        context = gx.get_context(context_root_dir="services/gx")
+    except Exception:
+        context = FileDataContext(context_root_dir="services/gx")
 
     # Add data source and data asset
     data_source = context.sources.add_or_update_pandas(name="sample")
-    data_asset = data_source.add_csv_asset(
-        name = "sample1",
-        filepath_or_buffer=cfg.db.sample_path
-    )
 
-    # Create batch request
-    batch_request = data_asset.build_batch_request()
+    data_asset = data_source.add_dataframe_asset(name="pandas_dataframe")
 
-    # Create expectation suit
-    context.add_or_update_expectation_suite("expectation_suite")
+    batch_request = data_asset.build_batch_request(dataframe=sample)
 
+    # Get an existing expectation suit
+    context.get_expectation_suite("expectation_suite")
 
     # Create a validator
     validator = context.get_validator(
@@ -119,66 +188,19 @@ def validate_initial_data(cfg):
         expectation_suite_name="expectation_suite",
     )
     try:
-        # Add expectations on the validator
-
-        # Completeness & Uniqueness & Validity
-        validator.expect_column_values_to_not_be_null(column='id')
-        validator.expect_column_values_to_be_unique(column='id')
-        validator.expect_column_values_to_be_of_type(column='id', type_='int')
-
-        # Completeness & Consistency & Validity
-        validator.expect_column_values_to_not_be_null(column='title')
-        validator.expect_column_values_to_be_of_type(column='title', type_='str')
-        validator.expect_column_proportion_of_unique_values_to_be_between(
-            column="title",
-            min_value=0.7,
-            max_value=1
-        )
-
-        # Completeness & Validity & Timelessness
-        validator.expect_column_values_to_not_be_null(column='lunchTime')
-        validator.expect_column_values_to_match_regex_list(
-            column='lunchTime',
-            regex_list=[r'^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$', r'^(200[0-9]|201[0-9]|202[0-4])-\d{2}-\d{2} \d{2}:\d{2}:\d{2}$']
-        )
-
-        # Completeness & Consistency & Accuracy
-        validator.expect_column_values_to_not_be_null(column='sold')
-        validator.expect_column_values_to_be_in_type_list(column='sold', type_list=['int'])
-        validator.expect_column_min_to_be_between(column='sold', min_value=0)
-
-        # Completeness & Consistency & Accuracy
-        validator.expect_column_values_to_not_be_null(column='rating')
-        validator.expect_column_values_to_be_of_type(column='rating', type_='float64')
-        validator.expect_column_values_to_be_between(column='rating', min_value=0, max_value=5)
-
-        # Completeness & Consistency & Accuracy
-        validator.expect_column_values_to_not_be_null(column='discount')
-        validator.expect_column_values_to_be_of_type(column='discount', type_='int')
-        validator.expect_column_values_to_be_between(column='discount', min_value=0, max_value=100)
-
-        # Completeness & Consistency & Consistency
-        validator.expect_column_values_to_not_be_null(column='type')
-        validator.expect_column_values_to_be_of_type(column='type', type_='str')
-        validator.expect_column_distinct_values_to_equal_set(column='type', value_set=['ad', 'natural'])
-
-        # Save expectation suite
-        validator.save_expectation_suite(
-            discard_failed_expectations = False
-        )
-
         batch_list = data_asset.get_batch_list_from_batch_request(batch_request)
+
+        validator.load_batch_list(batch_list)
 
         validations = [
             {
                 "batch_request": batch.batch_request,
-                "expectation_suite_name": "expectation_suite"
+                "expectation_suite_name": "expectation_suite",
             }
             for batch in batch_list
         ]
         checkpoint = context.add_or_update_checkpoint(
-            name="validator_checkpoint",
-            validations=validations
+            name="validator_checkpoint", validations=validations
         )
 
         checkpoint_result = checkpoint.run()
@@ -186,26 +208,318 @@ def validate_initial_data(cfg):
         print(e)
         return False
 
-    # Build the data docs (website files)
-    # context.build_data_docs()
-
-    # Open the data docs in a browser
-    # context.open_data_docs()
-
     return checkpoint_result.success
+
+
+def read_datastore():
+    if GlobalHydra.instance().is_initialized():
+        print("Using existing Hydra global instance.")
+        cfg = hydra.compose(config_name="main")
+    else:
+        print("Initializing a new Hydra global instance.")
+        hydra.initialize(
+            config_path="../configs", job_name="preprocess_data", version_base=None
+        )
+        cfg = hydra.compose(config_name="main")
+
+    df = pd.read_csv(cfg.db.sample_path)
+
+    version = cfg.data_version.version
+    return df, version
+
+
+# Class for a binary encoder that had fixed columns
+# Its necessary for data validation and decreasing number of columns
+class FixedBinsBinaryEncoder(BaseEstimator, TransformerMixin):
+    def __init__(self, max_bins=6):
+        self.max_bins = max_bins
+        self.encoder = BinaryEncoder()
+
+    def fit(self, X, y=None):
+        self.encoder.fit(X)
+        return self
+
+    def transform(self, X):
+        binary_encoded = self.encoder.transform(X)
+
+        num_columns = binary_encoded.shape[1]
+
+        if num_columns > self.max_bins:
+            raise ValueError(
+                f"Number of required bits ({num_columns}) exceeds the specified maximum number of bins ({self.max_bins})."
+            )
+
+        # Padding with zeros if necessary
+        padded_encoded = np.pad(
+            binary_encoded,
+            ((0, 0), (0, self.max_bins - num_columns)),
+            "constant",
+            constant_values=0,
+        )
+        return padded_encoded
+
+
+def preprocess_data(df: pd.DataFrame, cfg=None, skip_target=False):
+    # Setup the config
+    if cfg is None:
+        if GlobalHydra.instance().is_initialized():
+            print("Using existing Hydra global instance.")
+            cfg = hydra.compose(config_name="main")
+        else:
+            print("Initializing a new Hydra global instance.")
+            hydra.initialize(
+                config_path="../configs", job_name="preprocess_data", version_base=None
+            )
+            cfg = hydra.compose(config_name="main")
+
+    print(f"cfg data version {cfg.data_version.version}")
+
+    if not skip_target:
+        X = df.drop(cfg.zenml.features.target, axis=1)
+    else:
+        X = df
+    # Convert Date to year, month, and day
+    X["year"] = (
+        X["lunchTime"]
+        .apply(lambda date: datetime.strptime(date.split()[0], "%Y-%m-%d").year)
+        .astype(str)
+    )
+    X["month"] = X["lunchTime"].apply(
+        lambda date: datetime.strptime(date.split()[0], "%Y-%m-%d").month
+    )
+    X = X.drop(columns=["lunchTime"])
+    X = X[list(cfg.zenml.features.all)]
+    if not skip_target:
+        y = df[[cfg.zenml.features.target]]
+    numerical_features = list(cfg.zenml.features.numerical)
+    try:
+        preprocessor = zenml.load_artifact(name_or_id="preprocessor", version="1")
+    except Exception:
+        preprocessor = None
+    if preprocessor is None:
+        if cfg.data_version.version != 1 or skip_target:
+            raise ValueError(
+                "No preprocessor found. Sample version is not 1.\
+                            Please, run preprocess_data.py with sample version 1."
+            )
+
+        print("Doesn't find preprocessor. Creating...")
+        # Define the transformers for numerical and categorical features
+        numerical_transformer = Pipeline(
+            steps=[("scaler", StandardScaler())]  # Standardize numerical features
+        )
+
+        # Encode "type" and "month" via basic OneHot
+        type_transformer = Pipeline(
+            steps=[
+                (
+                    "onehot",
+                    OneHotEncoder(handle_unknown="ignore"),
+                )  # Apply one-hot encoding
+            ]
+        )
+
+        month_transformer = Pipeline(
+            steps=[
+                (
+                    "mon",
+                    OneHotEncoder(
+                        handle_unknown="ignore", categories=[[i for i in range(12)]]
+                    ),
+                )
+            ]
+        )
+
+        # Encode "year", "category_name" using Binary encoder with fixed number of columns
+        year_transformer = Pipeline(
+            steps=[("fb_1", FixedBinsBinaryEncoder(max_bins=6))]
+        )
+
+        category_name_transformer = Pipeline(
+            steps=[("fb_2", FixedBinsBinaryEncoder(max_bins=9))]
+        )
+
+        # Combine the transformers into a ColumnTransformer
+        preprocessor = ColumnTransformer(
+            transformers=[
+                ("num", numerical_transformer, numerical_features),
+                ("cat", type_transformer, ["type"]),
+                ("mon", month_transformer, ["month"]),
+                ("fb_year", year_transformer, ["year"]),
+                ("fb_cn", category_name_transformer, ["category_name"]),
+                # ('text', text_transformer, text_features)
+            ]
+        )
+
+        # Fit the preprocessor
+        preprocessor.fit(X)
+
+        zenml.save_artifact(preprocessor, name="preprocessor", version="1")
+
+    try:
+        target_preprocessor = zenml.load_artifact(
+            name_or_id="target_preprocessor", version="1"
+        )
+    except Exception as e:
+        print(e)
+        target_preprocessor = None
+    if target_preprocessor is None:
+        # If there is no preprocessor, and the sample version is not 1, then raise error
+        if cfg.data_version.version != 1:
+            raise ValueError(
+                "No target preprocessor found. Sample version is not 1.\
+                            Please, run preprocess_data.py with sample version 1."
+            )
+
+        print("Doesn't find target preprocessor. Creating...")
+        # Define the transformers for numerical and categorical features
+        numerical_transformer = Pipeline(
+            steps=[("scaler", StandardScaler())]  # Standardize numerical features
+        )
+        # Combine the transformers into a ColumnTransformer
+        target_preprocessor = ColumnTransformer(
+            transformers=[
+                ("num", numerical_transformer, y.columns),
+            ]
+        )
+        # Fit the pipeline on the training data
+        target_preprocessor = target_preprocessor.fit(y)
+        # Save the preprocessor
+        zenml.save_artifact(
+            target_preprocessor, name="target_preprocessor", version="1"
+        )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
+    try:
+        roberta_model = zenml.load_artifact(name_or_id="roberta_model", version="1")
+    except Exception:
+        roberta_model = None
+    if roberta_model is None:
+        print("Doesn't find roberta. Creating...")
+        model_name = "roberta-base"
+        roberta_model = RobertaModel.from_pretrained(model_name).to(device)
+        roberta_model.eval()
+        zenml.save_artifact(roberta_model, name="roberta_model", version="1")
+
+    # Create the pipeline with the preprocessor
+    pipeline = Pipeline(steps=[("preprocessor", preprocessor)])
+    target_pipeline = Pipeline(steps=[("preprocessor", target_preprocessor)])
+
+    X_transformed = pipeline.transform(X)
+    if not skip_target:
+        y_transformed = target_pipeline.transform(y)
+    # Convert transformed data back to the dataframe
+    num_features_names = numerical_features
+    type_features_names = preprocessor.named_transformers_["cat"][
+        "onehot"
+    ].get_feature_names_out(["type"])
+    all_feature_names = (
+        list(num_features_names)
+        + list(type_features_names)
+        + list([f"month_{i}" for i in range(12)])
+        + list([f"year_{i}" for i in range(6)])
+        + list([f"cn_{i}" for i in range(9)])
+    )
+    df_transformed = pd.DataFrame(X_transformed, columns=all_feature_names)
+
+    print(device)
+    embeddings = generate_embeddings(X["title"], roberta_model, device)
+    title_feature_name = [f"title_{i}" for i in range(embeddings.shape[1])]
+    df_titles = pd.DataFrame(embeddings.numpy(), columns=title_feature_name)
+    df_transformed = pd.concat([df_transformed, df_titles], axis=1)
+    del roberta_model
+    torch.cuda.empty_cache()
+    if not skip_target:
+        y_df = pd.DataFrame(y_transformed, columns=["price"])
+    else:
+        y_df = None
+    return df_transformed, y_df
+
+
+def validate_features(X, y):
+    # Create or open a data context
+    try:
+        context = gx.get_context(context_root_dir="services/gx")
+    except Exception:
+        context = FileDataContext(context_root_dir="services/gx")
+
+    # Add data source and data asset
+    data_source = context.sources.add_or_update_pandas(name="features_sample")
+    data_asset = data_source.add_dataframe_asset(name="features_sample", dataframe=X)
+
+    # Create batch request
+    batch_request = data_asset.build_batch_request()
+
+    # Get an existing expectation suit
+    context.get_expectation_suite("features_expectation_suite")
+
+    # Create a validator
+    validator = context.get_validator(
+        batch_request=batch_request,
+        expectation_suite_name="features_expectation_suite",
+    )
+    batch_list = data_asset.get_batch_list_from_batch_request(batch_request)
+
+    validator.load_batch_list(batch_list)
+
+    validations = [
+        {
+            "batch_request": batch.batch_request,
+            "expectation_suite_name": "features_expectation_suite",
+        }
+        for batch in batch_list
+    ]
+    checkpoint = context.add_or_update_checkpoint(
+        name="validator_checkpoint", validations=validations
+    )
+
+    checkpoint_result = checkpoint.run()
+    return checkpoint_result.success
+
+
+def load_features(X, y, version):
+    version = str(version)
+    df = pd.concat([X, y], axis=1)
+    try:
+        zenml.save_artifact(
+            data=df, name="features_target", version=version, tags=[version]
+        )
+    except zenml.exceptions.EntityExistsError:
+        pass
+
+    # Specify the name or ID of the artifact you want to load
+    artifact_name_or_id = (
+        "features_target"  # Replace with the appropriate name or ID if needed
+    )
+
+    if zenml.load_artifact(name_or_id=artifact_name_or_id, version=version) is None:
+        raise Exception("Artifact not loaded")
+
 
 @hydra.main(version_base=None, config_path="../configs", config_name="main")
 def test_data(cfg: DictConfig = None):
-    """This function creates a data sample and validates it.
     """
+    This function creates a data sample and validates it.
+    """
+
+    warnings.filterwarnings("ignore", category=DeprecationWarning)
+
     # take a sample
-    sample_data(cfg)
+    sample = sample_data(cfg)
+
     # validate the sample
     try:
         # if the validation failed, then try to handle the initial data
-        assert validate_initial_data(cfg)
-    except Exception as e:
-        handle_initial_data(cfg)
-    assert validate_initial_data(cfg)
+        assert validate_initial_data(cfg, sample)
+    except Exception:
+        sample = handle_initial_data(sample)
+        # sample.to_csv(cfg.db.sample_path)
+    assert validate_initial_data(cfg, sample)
 
-    print('Data is valid.')
+    # If the data is validated, then save it
+    sample.to_csv(cfg.db.sample_path)
+
+    print("Data is valid.")
+
+
+if __name__ == "__main__":
+    test_data()

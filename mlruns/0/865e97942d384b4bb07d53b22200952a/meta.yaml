@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/865e97942d384b4bb07d53b22200952a/artifacts
+end_time: 1721848226951
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 865e97942d384b4bb07d53b22200952a
+run_name: adorable-crane-418
+run_uuid: 865e97942d384b4bb07d53b22200952a
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721848224132
+status: 3
+tags: []
+user_id: john

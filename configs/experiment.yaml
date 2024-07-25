@@ -1,0 +1,9 @@
+experiment:
+  experiment_name: "torch_experiment"
+  run_name: "multi_run"
+  train_val_data_version: 1
+  test_data_version: 2
+  val_size: 0.2
+  test_size: 0.5
+  random_state: 42
+  cv_n_jobs: -1

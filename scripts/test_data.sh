@@ -1,5 +1,13 @@
 # take a sample and validate it
-python -c 'from src.data import *; test_data()'
+python src/data.py
 # version the data
 dvc add data/samples/sample.csv
+git add data/samples/sample.csv.dvc
+git commit -m "Added data.csv to DVC"
+git push 
+# Read version from data.data_version.yaml
+version=$(cat configs/data_version.yaml | grep 'version' | cut -d ' ' -f 2)
+
+git tag v$version
+git push v$version
 dvc push

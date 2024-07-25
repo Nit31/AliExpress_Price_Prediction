@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/bb45d1543d204fb1a31a9592ce7dd81c/artifacts
+end_time: 1721847206293
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: bb45d1543d204fb1a31a9592ce7dd81c
+run_name: flawless-worm-176
+run_uuid: bb45d1543d204fb1a31a9592ce7dd81c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721847200309
+status: 3
+tags: []
+user_id: john

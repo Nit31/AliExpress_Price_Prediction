@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/0a96c2a1d92b479daf850f0747182649/artifacts
+end_time: 1721843953248
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 0a96c2a1d92b479daf850f0747182649
+run_name: angry-ram-449
+run_uuid: 0a96c2a1d92b479daf850f0747182649
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721842312556
+status: 3
+tags: []
+user_id: john

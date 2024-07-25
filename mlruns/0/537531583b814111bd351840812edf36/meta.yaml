@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/537531583b814111bd351840812edf36/artifacts
+end_time: 1721847907236
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 537531583b814111bd351840812edf36
+run_name: invincible-ant-444
+run_uuid: 537531583b814111bd351840812edf36
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721847902340
+status: 4
+tags: []
+user_id: john

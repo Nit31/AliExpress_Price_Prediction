@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/38d79cce1bc244fdaf5b3bf080a849bf/artifacts
+end_time: 1721842262118
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 38d79cce1bc244fdaf5b3bf080a849bf
+run_name: funny-gnat-774
+run_uuid: 38d79cce1bc244fdaf5b3bf080a849bf
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721842261948
+status: 3
+tags: []
+user_id: john

@@ -1,0 +1,15 @@
+artifact_uri: file:///home/john/repos/AliExpress_Price_Prediction/mlruns/0/6d39c4a4d3904cc2ac0bd7bbf18e1a9c/artifacts
+end_time: 1721848218570
+entry_point_name: ''
+experiment_id: '0'
+lifecycle_stage: active
+run_id: 6d39c4a4d3904cc2ac0bd7bbf18e1a9c
+run_name: dashing-worm-787
+run_uuid: 6d39c4a4d3904cc2ac0bd7bbf18e1a9c
+source_name: ''
+source_type: 4
+source_version: ''
+start_time: 1721848215709
+status: 3
+tags: []
+user_id: john

@@ -36,7 +36,7 @@
                     clip-rule="evenodd" />
             </svg>
         </div>
-        <span class="uppercase text-sm ml-2 py-2 leading-4 w-min">9&nbsp;issues detected</span>
+        <span class="uppercase text-sm ml-2 py-2 leading-4 w-min">13&nbsp;issues detected</span>
     </div>
 
     
@@ -62,7 +62,20 @@
 
             <span
                 class="ml-1 rounded-full text-xs min-w-4 min-h-4 px-1 py-0.5 inline-block text-center bg-red-400">
-                8
+                7
+            </span>
+        </div>
+    </div>
+    
+    <div data-tab-target="Ethical"
+        class="tab-header cursor-pointer group">
+        <div
+            class="overflow-hidden text-ellipsis group-[.active]:bg-zinc-800 group-[.active]:border-b-zinc-800 group-[.active]:border-gray-500 border-l px-3 py-2 border-r border-t border-b border-gray-600 border-b-gray-500 h-11 whitespace-nowrap">
+            Ethical
+
+            <span
+                class="ml-1 rounded-full text-xs min-w-4 min-h-4 px-1 py-0.5 inline-block text-center bg-red-400">
+                5
             </span>
         </div>
     </div>
@@ -167,19 +180,19 @@
   </thead>
   <tbody>
     <tr>
-      <th>190617</th>
-      <td>-0.206215</td>
-      <td>-0.205069</td>
+      <th>555857</th>
+      <td>30.746815</td>
+      <td>25.417419</td>
     </tr>
     <tr>
-      <th>28709</th>
-      <td>-0.205507</td>
-      <td>-0.204309</td>
+      <th>576858</th>
+      <td>113.64357</td>
+      <td>58.527538</td>
     </tr>
     <tr>
-      <th>189804</th>
-      <td>-0.195033</td>
-      <td>-0.177931</td>
+      <th>675986</th>
+      <td>43.770992</td>
+      <td>27.539246</td>
     </tr>
   </tbody>
 </table>
@@ -232,11 +245,11 @@ happen for different reasons:</p>
     <div class="flex items-center space-x-1">
         <h2 class="uppercase my-4 mr-2 font-medium">Issues</h2>
         
-        <span class="text-xs border rounded px-1 uppercase text-red-400 border-red-400">7
+        <span class="text-xs border rounded px-1 uppercase text-red-400 border-red-400">5
             major</span>
         
         
-        <span class="text-xs border rounded px-1 uppercase text-amber-200 border-amber-200">1
+        <span class="text-xs border rounded px-1 uppercase text-amber-200 border-amber-200">2
             medium</span>
         
         
@@ -253,7 +266,7 @@ happen for different reasons:</p>
         
         
         <code class="mono text-blue-300">
-        `lunchTime` contains &#34;01&#34;
+        `lunchTime` contains &#34;12&#34;
         </code>
         
     </td>
@@ -263,10 +276,10 @@ happen for different reasons:</p>
 
     
     <td class="p-3">
-        <span>MSE = 274284.674</span>
+        <span>MSE = 58456.200</span>
         
         <span class="text-gray-400">
-            (Global = 62890.680)
+            (Global = 16950.255)
         </span>
         
     </td>
@@ -274,15 +287,15 @@ happen for different reasons:</p>
     
     <td class="p-3">        
         <span class="text-red-400">
-            +336.13% than global
+            +244.87% than global
         </span>
     </td>
     
     
     <td class="p-3">
         <span class="text-gray-400">
-            825 samples affected<br>
-            (7.1% of dataset)
+            1079 samples affected<br>
+            (9.3% of dataset)
         </span>
         
     <td class="p-3 text-xs text-right space-x-1">
@@ -296,7 +309,7 @@ happen for different reasons:</p>
     <td colspan="1000" class="p-3">
         
         <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `lunchTime` contains &#34;01&#34;, the MSE is 336.13% greater than the global MSE.
+        For records in the dataset where `lunchTime` contains &#34;12&#34;, the MSE is 244.87% greater than the global MSE.
         
 
         
@@ -327,22 +340,258 @@ happen for different reasons:</p>
   </thead>
   <tbody>
     <tr>
-      <th>200486</th>
-      <td>2022-01-07 00:00:00</td>
-      <td>6.18</td>
-      <td>-0.033697</td>
+      <th>50728</th>
+      <td>2021-12-19 00:00:00</td>
+      <td>2.28</td>
+      <td>87.997322</td>
     </tr>
     <tr>
-      <th>545697</th>
-      <td>2022-01-03 00:00:00</td>
-      <td>15.21</td>
-      <td>-0.195436</td>
+      <th>229532</th>
+      <td>2021-12-02 00:00:00</td>
+      <td>55.18</td>
+      <td>70.484772</td>
     </tr>
     <tr>
-      <th>109886</th>
-      <td>2019-01-09 00:00:00</td>
-      <td>54.80</td>
-      <td>0.023426</td>
+      <th>768281</th>
+      <td>2022-07-12 00:00:00</td>
+      <td>78.22</td>
+      <td>41.995125</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+        </div>
+        
+
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:performance:P0204
+        </span>
+        
+        
+    </td>
+</tr>
+        </tbody>
+        
+        <tbody class="first:border-t border-b border-zinc-500">
+            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
+    
+    <td class="p-3">
+        
+        
+        <code class="mono text-blue-300">
+        `lunchTime` contains &#34;03&#34;
+        </code>
+        
+    </td>
+    
+
+    
+
+    
+    <td class="p-3">
+        <span>MSE = 46784.832</span>
+        
+        <span class="text-gray-400">
+            (Global = 16950.255)
+        </span>
+        
+    </td>
+    
+    
+    <td class="p-3">        
+        <span class="text-red-400">
+            +176.01% than global
+        </span>
+    </td>
+    
+    
+    <td class="p-3">
+        <span class="text-gray-400">
+            1272 samples affected<br>
+            (11.0% of dataset)
+        </span>
+        
+    <td class="p-3 text-xs text-right space-x-1">
+        <a href="#"
+            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
+        <a href="#"
+            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
+    </td>
+</tr>
+<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
+    <td colspan="1000" class="p-3">
+        
+        <h4 class="font-bold text-sm">Description</h4>
+        For records in the dataset where `lunchTime` contains &#34;03&#34;, the MSE is 176.01% greater than the global MSE.
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Examples</h4>
+        <div class="text-white text-sm overflow-scroll">
+            <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>lunchTime</th>
+      <th>price</th>
+      <th>Predicted `price`</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>584077</th>
+      <td>2021-03-27 00:00:00</td>
+      <td>2.32</td>
+      <td>25.865559</td>
+    </tr>
+    <tr>
+      <th>553617</th>
+      <td>2021-06-03 00:00:00</td>
+      <td>32.82</td>
+      <td>36.165855</td>
+    </tr>
+    <tr>
+      <th>104373</th>
+      <td>2022-03-28 00:00:00</td>
+      <td>11.04</td>
+      <td>37.740444</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+        </div>
+        
+
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:performance:P0204
+        </span>
+        
+        
+    </td>
+</tr>
+        </tbody>
+        
+        <tbody class="first:border-t border-b border-zinc-500">
+            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
+    
+    <td class="p-3">
+        
+        
+        <code class="mono text-blue-300">
+        `lunchTime` contains &#34;2021&#34;
+        </code>
+        
+    </td>
+    
+
+    
+
+    
+    <td class="p-3">
+        <span>MSE = 29536.417</span>
+        
+        <span class="text-gray-400">
+            (Global = 16950.255)
+        </span>
+        
+    </td>
+    
+    
+    <td class="p-3">        
+        <span class="text-red-400">
+            +74.25% than global
+        </span>
+    </td>
+    
+    
+    <td class="p-3">
+        <span class="text-gray-400">
+            3745 samples affected<br>
+            (32.4% of dataset)
+        </span>
+        
+    <td class="p-3 text-xs text-right space-x-1">
+        <a href="#"
+            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
+        <a href="#"
+            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
+    </td>
+</tr>
+<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
+    <td colspan="1000" class="p-3">
+        
+        <h4 class="font-bold text-sm">Description</h4>
+        For records in the dataset where `lunchTime` contains &#34;2021&#34;, the MSE is 74.25% greater than the global MSE.
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Examples</h4>
+        <div class="text-white text-sm overflow-scroll">
+            <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>lunchTime</th>
+      <th>price</th>
+      <th>Predicted `price`</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>50728</th>
+      <td>2021-12-19 00:00:00</td>
+      <td>2.28</td>
+      <td>87.997322</td>
+    </tr>
+    <tr>
+      <th>283152</th>
+      <td>2021-04-04 00:00:00</td>
+      <td>99.95</td>
+      <td>78.926437</td>
+    </tr>
+    <tr>
+      <th>508891</th>
+      <td>2021-10-13 00:00:00</td>
+      <td>11.43</td>
+      <td>14.948879</td>
     </tr>
   </tbody>
 </table>
@@ -381,10 +630,10 @@ happen for different reasons:</p>
 
     
     <td class="p-3">
-        <span>MSE = 151605.874</span>
+        <span>MAE = 60.918</span>
         
         <span class="text-gray-400">
-            (Global = 62890.680)
+            (Global = 39.398)
         </span>
         
     </td>
@@ -392,15 +641,15 @@ happen for different reasons:</p>
     
     <td class="p-3">        
         <span class="text-red-400">
-            +141.06% than global
+            +54.62% than global
         </span>
     </td>
     
     
     <td class="p-3">
         <span class="text-gray-400">
-            1249 samples affected<br>
-            (10.8% of dataset)
+            1286 samples affected<br>
+            (11.1% of dataset)
         </span>
         
     <td class="p-3 text-xs text-right space-x-1">
@@ -414,7 +663,7 @@ happen for different reasons:</p>
     <td colspan="1000" class="p-3">
         
         <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `type` == &#34;ad&#34;, the MSE is 141.06% greater than the global MSE.
+        For records in the dataset where `type` == &#34;ad&#34;, the MAE is 54.62% greater than the global MAE.
         
 
         
@@ -445,22 +694,22 @@ happen for different reasons:</p>
   </thead>
   <tbody>
     <tr>
-      <th>181515</th>
+      <th>229532</th>
       <td>ad</td>
-      <td>61.74</td>
-      <td>0.001748</td>
+      <td>55.18</td>
+      <td>70.484772</td>
     </tr>
     <tr>
-      <th>165901</th>
+      <th>205701</th>
       <td>ad</td>
-      <td>6.18</td>
-      <td>-0.212382</td>
+      <td>98.42</td>
+      <td>126.978569</td>
     </tr>
     <tr>
-      <th>357522</th>
+      <th>72465</th>
       <td>ad</td>
-      <td>87.10</td>
-      <td>-0.127367</td>
+      <td>27.57</td>
+      <td>41.187294</td>
     </tr>
   </tbody>
 </table>
@@ -499,10 +748,10 @@ happen for different reasons:</p>
 
     
     <td class="p-3">
-        <span>MSE = 103619.450</span>
+        <span>MSE = 19543.293</span>
         
         <span class="text-gray-400">
-            (Global = 62890.680)
+            (Global = 16950.255)
         </span>
         
     </td>
@@ -510,15 +759,15 @@ happen for different reasons:</p>
     
     <td class="p-3">        
         <span class="text-red-400">
-            +64.76% than global
+            +15.30% than global
         </span>
     </td>
     
     
     <td class="p-3">
         <span class="text-gray-400">
-            1515 samples affected<br>
-            (13.1% of dataset)
+            1552 samples affected<br>
+            (13.4% of dataset)
         </span>
         
     <td class="p-3 text-xs text-right space-x-1">
@@ -532,7 +781,7 @@ happen for different reasons:</p>
     <td colspan="1000" class="p-3">
         
         <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `lunchTime` contains &#34;07&#34;, the MSE is 64.76% greater than the global MSE.
+        For records in the dataset where `lunchTime` contains &#34;07&#34;, the MSE is 15.3% greater than the global MSE.
         
 
         
@@ -563,22 +812,22 @@ happen for different reasons:</p>
   </thead>
   <tbody>
     <tr>
-      <th>181515</th>
-      <td>2021-07-03 00:00:00</td>
-      <td>61.74</td>
-      <td>0.001748</td>
+      <th>479856</th>
+      <td>2022-07-14 00:00:00</td>
+      <td>14.44</td>
+      <td>21.385715</td>
     </tr>
     <tr>
-      <th>200486</th>
-      <td>2022-01-07 00:00:00</td>
-      <td>6.18</td>
-      <td>-0.033697</td>
+      <th>409638</th>
+      <td>2021-07-30 00:00:00</td>
+      <td>5.71</td>
+      <td>11.988323</td>
     </tr>
     <tr>
-      <th>622636</th>
-      <td>2022-02-07 00:00:00</td>
-      <td>1.51</td>
-      <td>-0.217638</td>
+      <th>192697</th>
+      <td>2022-07-15 00:00:00</td>
+      <td>3.13</td>
+      <td>11.340176</td>
     </tr>
   </tbody>
 </table>
@@ -607,7 +856,7 @@ happen for different reasons:</p>
         
         
         <code class="mono text-blue-300">
-        `lunchTime` contains &#34;12&#34;
+        `lunchTime` contains &#34;06&#34;
         </code>
         
     </td>
@@ -617,26 +866,26 @@ happen for different reasons:</p>
 
     
     <td class="p-3">
-        <span>MSE = 87124.916</span>
+        <span>MAE = 42.224</span>
         
         <span class="text-gray-400">
-            (Global = 62890.680)
+            (Global = 39.398)
         </span>
         
     </td>
     
     
     <td class="p-3">        
-        <span class="text-red-400">
-            +38.53% than global
+        <span class="text-amber-200">
+            +7.17% than global
         </span>
     </td>
     
     
     <td class="p-3">
         <span class="text-gray-400">
-            1104 samples affected<br>
-            (9.6% of dataset)
+            1424 samples affected<br>
+            (12.3% of dataset)
         </span>
         
     <td class="p-3 text-xs text-right space-x-1">
@@ -650,7 +899,7 @@ happen for different reasons:</p>
     <td colspan="1000" class="p-3">
         
         <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `lunchTime` contains &#34;12&#34;, the MSE is 38.53% greater than the global MSE.
+        For records in the dataset where `lunchTime` contains &#34;06&#34;, the MAE is 7.17% greater than the global MAE.
         
 
         
@@ -681,140 +930,22 @@ happen for different reasons:</p>
   </thead>
   <tbody>
     <tr>
-      <th>165901</th>
-      <td>2014-12-20 00:00:00</td>
-      <td>6.18</td>
-      <td>-0.212382</td>
+      <th>310870</th>
+      <td>2022-06-17 00:00:00</td>
+      <td>56.01</td>
+      <td>51.952343</td>
     </tr>
     <tr>
-      <th>317344</th>
-      <td>2021-12-17 00:00:00</td>
-      <td>176.24</td>
-      <td>-0.171077</td>
+      <th>553617</th>
+      <td>2021-06-03 00:00:00</td>
+      <td>32.82</td>
+      <td>36.165855</td>
     </tr>
     <tr>
-      <th>425522</th>
-      <td>2021-12-28 00:00:00</td>
-      <td>77.41</td>
-      <td>-0.205151</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-        </div>
-        
-
-        
-
-        
-        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
-        
-        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
-            avid-effect:performance:P0204
-        </span>
-        
-        
-    </td>
-</tr>
-        </tbody>
-        
-        <tbody class="first:border-t border-b border-zinc-500">
-            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
-    
-    <td class="p-3">
-        
-        
-        <code class="mono text-blue-300">
-        `lunchTime` contains &#34;2022&#34;
-        </code>
-        
-    </td>
-    
-
-    
-
-    
-    <td class="p-3">
-        <span>MSE = 85280.874</span>
-        
-        <span class="text-gray-400">
-            (Global = 62890.680)
-        </span>
-        
-    </td>
-    
-    
-    <td class="p-3">        
-        <span class="text-red-400">
-            +35.60% than global
-        </span>
-    </td>
-    
-    
-    <td class="p-3">
-        <span class="text-gray-400">
-            6138 samples affected<br>
-            (53.2% of dataset)
-        </span>
-        
-    <td class="p-3 text-xs text-right space-x-1">
-        <a href="#"
-            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
-        <a href="#"
-            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
-    </td>
-</tr>
-<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
-    <td colspan="1000" class="p-3">
-        
-        <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `lunchTime` contains &#34;2022&#34;, the MSE is 35.6% greater than the global MSE.
-        
-
-        
-        <h4 class="font-bold text-sm mt-4">Examples</h4>
-        <div class="text-white text-sm overflow-scroll">
-            <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>lunchTime</th>
-      <th>price</th>
-      <th>Predicted `price`</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>585673</th>
-      <td>2022-06-25 00:00:00</td>
-      <td>4.98</td>
-      <td>-0.202940</td>
-    </tr>
-    <tr>
-      <th>492796</th>
-      <td>2022-02-09 00:00:00</td>
-      <td>54.08</td>
-      <td>-0.186086</td>
-    </tr>
-    <tr>
-      <th>200486</th>
-      <td>2022-01-07 00:00:00</td>
-      <td>6.18</td>
-      <td>-0.033697</td>
+      <th>146874</th>
+      <td>2022-06-15 00:00:00</td>
+      <td>3.90</td>
+      <td>26.504021</td>
     </tr>
   </tbody>
 </table>
@@ -853,246 +984,10 @@ happen for different reasons:</p>
 
     
     <td class="p-3">
-        <span>MSE = 78790.307</span>
+        <span>MAE = 41.878</span>
         
         <span class="text-gray-400">
-            (Global = 62890.680)
-        </span>
-        
-    </td>
-    
-    
-    <td class="p-3">        
-        <span class="text-red-400">
-            +25.28% than global
-        </span>
-    </td>
-    
-    
-    <td class="p-3">
-        <span class="text-gray-400">
-            1099 samples affected<br>
-            (9.5% of dataset)
-        </span>
-        
-    <td class="p-3 text-xs text-right space-x-1">
-        <a href="#"
-            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
-        <a href="#"
-            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
-    </td>
-</tr>
-<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
-    <td colspan="1000" class="p-3">
-        
-        <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `lunchTime` contains &#34;11&#34;, the MSE is 25.28% greater than the global MSE.
-        
-
-        
-        <h4 class="font-bold text-sm mt-4">Examples</h4>
-        <div class="text-white text-sm overflow-scroll">
-            <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>lunchTime</th>
-      <th>price</th>
-      <th>Predicted `price`</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>254156</th>
-      <td>2021-10-11 00:00:00</td>
-      <td>38.80</td>
-      <td>0.883952</td>
-    </tr>
-    <tr>
-      <th>408847</th>
-      <td>2021-11-18 00:00:00</td>
-      <td>18.07</td>
-      <td>-0.215167</td>
-    </tr>
-    <tr>
-      <th>151545</th>
-      <td>2022-10-11 00:00:00</td>
-      <td>2.59</td>
-      <td>-0.189239</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-        </div>
-        
-
-        
-
-        
-        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
-        
-        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
-            avid-effect:performance:P0204
-        </span>
-        
-        
-    </td>
-</tr>
-        </tbody>
-        
-        <tbody class="first:border-t border-b border-zinc-500">
-            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
-    
-    <td class="p-3">
-        
-        
-        <code class="mono text-blue-300">
-        `lunchTime` contains &#34;10&#34;
-        </code>
-        
-    </td>
-    
-
-    
-
-    
-    <td class="p-3">
-        <span>MAE = 71.167</span>
-        
-        <span class="text-gray-400">
-            (Global = 60.395)
-        </span>
-        
-    </td>
-    
-    
-    <td class="p-3">        
-        <span class="text-red-400">
-            +17.84% than global
-        </span>
-    </td>
-    
-    
-    <td class="p-3">
-        <span class="text-gray-400">
-            1426 samples affected<br>
-            (12.3% of dataset)
-        </span>
-        
-    <td class="p-3 text-xs text-right space-x-1">
-        <a href="#"
-            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
-        <a href="#"
-            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
-    </td>
-</tr>
-<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
-    <td colspan="1000" class="p-3">
-        
-        <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `lunchTime` contains &#34;10&#34;, the MAE is 17.84% greater than the global MAE.
-        
-
-        
-        <h4 class="font-bold text-sm mt-4">Examples</h4>
-        <div class="text-white text-sm overflow-scroll">
-            <div>
-<style scoped>
-    .dataframe tbody tr th:only-of-type {
-        vertical-align: middle;
-    }
-
-    .dataframe tbody tr th {
-        vertical-align: top;
-    }
-
-    .dataframe thead th {
-        text-align: right;
-    }
-</style>
-<table border="1" class="dataframe">
-  <thead>
-    <tr style="text-align: right;">
-      <th></th>
-      <th>lunchTime</th>
-      <th>price</th>
-      <th>Predicted `price`</th>
-    </tr>
-  </thead>
-  <tbody>
-    <tr>
-      <th>295199</th>
-      <td>2022-10-28 00:00:00</td>
-      <td>5.56</td>
-      <td>-0.206984</td>
-    </tr>
-    <tr>
-      <th>254156</th>
-      <td>2021-10-11 00:00:00</td>
-      <td>38.80</td>
-      <td>0.883952</td>
-    </tr>
-    <tr>
-      <th>240737</th>
-      <td>2021-10-23 00:00:00</td>
-      <td>4.48</td>
-      <td>-0.215055</td>
-    </tr>
-  </tbody>
-</table>
-</div>
-        </div>
-        
-
-        
-
-        
-        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
-        
-        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
-            avid-effect:performance:P0204
-        </span>
-        
-        
-    </td>
-</tr>
-        </tbody>
-        
-        <tbody class="first:border-t border-b border-zinc-500">
-            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
-    
-    <td class="p-3">
-        
-        
-        <code class="mono text-blue-300">
-        `lunchTime` contains &#34;2020&#34;
-        </code>
-        
-    </td>
-    
-
-    
-
-    
-    <td class="p-3">
-        <span>MAE = 66.238</span>
-        
-        <span class="text-gray-400">
-            (Global = 60.395)
+            (Global = 39.398)
         </span>
         
     </td>
@@ -1100,15 +995,15 @@ happen for different reasons:</p>
     
     <td class="p-3">        
         <span class="text-amber-200">
-            +9.68% than global
+            +6.29% than global
         </span>
     </td>
     
     
     <td class="p-3">
         <span class="text-gray-400">
-            803 samples affected<br>
-            (7.0% of dataset)
+            1146 samples affected<br>
+            (9.9% of dataset)
         </span>
         
     <td class="p-3 text-xs text-right space-x-1">
@@ -1122,7 +1017,7 @@ happen for different reasons:</p>
     <td colspan="1000" class="p-3">
         
         <h4 class="font-bold text-sm">Description</h4>
-        For records in the dataset where `lunchTime` contains &#34;2020&#34;, the MAE is 9.68% greater than the global MAE.
+        For records in the dataset where `lunchTime` contains &#34;11&#34;, the MAE is 6.29% greater than the global MAE.
         
 
         
@@ -1153,22 +1048,22 @@ happen for different reasons:</p>
   </thead>
   <tbody>
     <tr>
-      <th>484151</th>
-      <td>2020-10-22 00:00:00</td>
-      <td>2.66</td>
-      <td>-0.196739</td>
+      <th>628299</th>
+      <td>2022-04-11 00:00:00</td>
+      <td>3.82</td>
+      <td>14.590145</td>
     </tr>
     <tr>
-      <th>722633</th>
-      <td>2020-06-15 00:00:00</td>
-      <td>4.25</td>
-      <td>-0.160212</td>
+      <th>740865</th>
+      <td>2021-11-20 00:00:00</td>
+      <td>68.70</td>
+      <td>177.128540</td>
     </tr>
     <tr>
-      <th>667886</th>
-      <td>2020-12-28 00:00:00</td>
-      <td>16.02</td>
-      <td>-0.202477</td>
+      <th>90499</th>
+      <td>2022-08-11 00:00:00</td>
+      <td>501.93</td>
+      <td>219.266800</td>
     </tr>
   </tbody>
 </table>
@@ -1183,6 +1078,663 @@ happen for different reasons:</p>
         
         <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
             avid-effect:performance:P0204
+        </span>
+        
+        
+    </td>
+</tr>
+        </tbody>
+        
+    </table>
+</div>
+    
+</div>
+
+<div id="Ethical" role="tabpanel" class="m-4 mb-4 hidden">
+    <div class="p-3 bg-amber-100/40 rounded-sm w-full flex align-middle">
+        <div class="text-amber-100 mt-1.5">
+            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5"
+                stroke="currentColor" class="w-6 h-6">
+                <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M12 9v3.75m-9.303 3.376c-.866 1.5.217 3.374 1.948 3.374h14.71c1.73 0 2.813-1.874 1.948-3.374L13.949 3.378c-.866-1.5-3.032-1.5-3.898 0L2.697 16.126zM12 15.75h.007v.008H12v-.008z" />
+            </svg>
+        </div>
+        <div class="ml-2 text-amber-100 text-sm">
+            <div class="prose">
+                <p>Your model seems to be sensitive to gender, ethnic, or religion based perturbations in the input data. These perturbations can include switching some words from feminine to masculine, countries or nationalities. This happens when:</p>
+<ul>
+<li>Underrepresentation of certain demographic groups in the training data</li>
+<li>Data is reflecting some structural biases and societal prejudices</li>
+<li>Use of complex models with large number of parameters that tend to overfit the training data</li>
+</ul>
+<p>To learn more about causes and solutions, check our <a href="https://docs.giskard.ai/en/stable/knowledge/key_vulnerabilities/ethics/index.html">guide on unethical behaviour.</a></p>
+            </div>
+        </div>
+    </div>
+
+    <div class="flex items-center space-x-1">
+        <h2 class="uppercase my-4 mr-2 font-medium">Issues</h2>
+        
+        <span class="text-xs border rounded px-1 uppercase text-red-400 border-red-400">5
+            major</span>
+        
+        
+        
+    </div>
+
+    
+        <div class="overflow-x-auto overflow-y-clip h-max">
+    <table class="table-auto w-full text-white">
+        
+        <tbody class="first:border-t border-b border-zinc-500">
+            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
+    
+    <td class="p-3">
+        
+        <span class="mono text-blue-300">
+            Feature `storeName`
+        </span>
+        
+        
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Switch countries from high- to low-income and vice versa</span>
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Fail rate = 1.000</span>
+        
+    </td>
+    
+    
+    <td class="p-3">        
+        <span class="text-red-400">
+            1/1 tested samples (100.0%) changed prediction after perturbation
+        </span>
+    </td>
+    
+    
+    <td class="p-3">
+        <span class="text-gray-400">
+            1 samples affected<br>
+            (0.0% of dataset)
+        </span>
+        
+    <td class="p-3 text-xs text-right space-x-1">
+        <a href="#"
+            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
+        <a href="#"
+            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
+    </td>
+</tr>
+<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
+    <td colspan="1000" class="p-3">
+        
+        <h4 class="font-bold text-sm">Description</h4>
+        When feature “storeName” is perturbed with the transformation “Switch countries from high- to low-income and vice versa”, the model changes its prediction in 100.0% of the cases. We expected the predictions not to be affected by this transformation.
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Examples</h4>
+        <div class="text-white text-sm overflow-scroll">
+            <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>storeName</th>
+      <th>Switch countries from high- to low-income and vice versa(storeName)</th>
+      <th>Original prediction</th>
+      <th>Prediction after perturbation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>112887</th>
+      <td>China high quality hotel cordless table lighting Store</td>
+      <td>Pakistan high quality hotel cordless table lighting Store</td>
+      <td>38.727768</td>
+      <td>83.7155</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+        </div>
+        
+
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:ethics:E0101
+        </span>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:performance:P0201
+        </span>
+        
+        
+    </td>
+</tr>
+        </tbody>
+        
+        <tbody class="first:border-t border-b border-zinc-500">
+            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
+    
+    <td class="p-3">
+        
+        <span class="mono text-blue-300">
+            Feature `storeName`
+        </span>
+        
+        
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Switch Gender</span>
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Fail rate = 0.933</span>
+        
+    </td>
+    
+    
+    <td class="p-3">        
+        <span class="text-red-400">
+            14/15 tested samples (93.33%) changed prediction after perturbation
+        </span>
+    </td>
+    
+    
+    <td class="p-3">
+        <span class="text-gray-400">
+            15 samples affected<br>
+            (0.1% of dataset)
+        </span>
+        
+    <td class="p-3 text-xs text-right space-x-1">
+        <a href="#"
+            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
+        <a href="#"
+            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
+    </td>
+</tr>
+<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
+    <td colspan="1000" class="p-3">
+        
+        <h4 class="font-bold text-sm">Description</h4>
+        When feature “storeName” is perturbed with the transformation “Switch Gender”, the model changes its prediction in 93.33% of the cases. We expected the predictions not to be affected by this transformation.
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Examples</h4>
+        <div class="text-white text-sm overflow-scroll">
+            <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>storeName</th>
+      <th>Switch Gender(storeName)</th>
+      <th>Original prediction</th>
+      <th>Prediction after perturbation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>663960</th>
+      <td>Princess Baby(USD 150 DHL Shipping) Store</td>
+      <td>prince Baby(USD 150 DHL Shipping) Store</td>
+      <td>35.253029</td>
+      <td>13.528400</td>
+    </tr>
+    <tr>
+      <th>484557</th>
+      <td>Mr HE and Ms ZHANG Store</td>
+      <td>Mr she and Ms ZHANG Store</td>
+      <td>22.952091</td>
+      <td>15.965450</td>
+    </tr>
+    <tr>
+      <th>165426</th>
+      <td>Mother Care Child Factory Product Store</td>
+      <td>father Care Child Factory Product Store</td>
+      <td>30.044991</td>
+      <td>26.574364</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+        </div>
+        
+
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:ethics:E0101
+        </span>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:performance:P0201
+        </span>
+        
+        
+    </td>
+</tr>
+        </tbody>
+        
+        <tbody class="first:border-t border-b border-zinc-500">
+            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
+    
+    <td class="p-3">
+        
+        <span class="mono text-blue-300">
+            Feature `title`
+        </span>
+        
+        
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Switch Religion</span>
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Fail rate = 0.833</span>
+        
+    </td>
+    
+    
+    <td class="p-3">        
+        <span class="text-red-400">
+            20/24 tested samples (83.33%) changed prediction after perturbation
+        </span>
+    </td>
+    
+    
+    <td class="p-3">
+        <span class="text-gray-400">
+            24 samples affected<br>
+            (0.2% of dataset)
+        </span>
+        
+    <td class="p-3 text-xs text-right space-x-1">
+        <a href="#"
+            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
+        <a href="#"
+            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
+    </td>
+</tr>
+<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
+    <td colspan="1000" class="p-3">
+        
+        <h4 class="font-bold text-sm">Description</h4>
+        When feature “title” is perturbed with the transformation “Switch Religion”, the model changes its prediction in 83.33% of the cases. We expected the predictions not to be affected by this transformation.
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Examples</h4>
+        <div class="text-white text-sm overflow-scroll">
+            <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>Switch Religion(title)</th>
+      <th>Original prediction</th>
+      <th>Prediction after perturbation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>443946</th>
+      <td>High Quality 90*90cm Square Silk scarf  Female Plain Shawls and wrap Office Lady Hair Neck Foulard India Muslim Headscarf pareo</td>
+      <td>High Quality 90*90cm Square Silk scarf  Female Plain Shawls and wrap Office Lady Hair Neck Foulard India hindu Headscarf pareo</td>
+      <td>22.015781</td>
+      <td>26.730541</td>
+    </tr>
+    <tr>
+      <th>414170</th>
+      <td>8pcs/box Muslim Hijab Pins Color Black and White Safety Pins Clips Ladies Hair Dressing Accessories Brooches</td>
+      <td>8pcs/box jew Hijab Pins Color Black and White Safety Pins Clips Ladies Hair Dressing Accessories Brooches</td>
+      <td>14.123222</td>
+      <td>11.333683</td>
+    </tr>
+    <tr>
+      <th>33558</th>
+      <td>High Quality 1PC Alloy Incense Burner Stick Holder Plate Buddhism Lotus Censer Bronze Nasturtium Incense Burner</td>
+      <td>High Quality 1PC Alloy Incense Burner Stick Holder Plate islam Lotus Censer Bronze Nasturtium Incense Burner</td>
+      <td>20.967567</td>
+      <td>14.385845</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+        </div>
+        
+
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:ethics:E0101
+        </span>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:performance:P0201
+        </span>
+        
+        
+    </td>
+</tr>
+        </tbody>
+        
+        <tbody class="first:border-t border-b border-zinc-500">
+            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
+    
+    <td class="p-3">
+        
+        <span class="mono text-blue-300">
+            Feature `title`
+        </span>
+        
+        
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Switch countries from high- to low-income and vice versa</span>
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Fail rate = 0.654</span>
+        
+    </td>
+    
+    
+    <td class="p-3">        
+        <span class="text-red-400">
+            266/407 tested samples (65.36%) changed prediction after perturbation
+        </span>
+    </td>
+    
+    
+    <td class="p-3">
+        <span class="text-gray-400">
+            407 samples affected<br>
+            (3.5% of dataset)
+        </span>
+        
+    <td class="p-3 text-xs text-right space-x-1">
+        <a href="#"
+            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
+        <a href="#"
+            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
+    </td>
+</tr>
+<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
+    <td colspan="1000" class="p-3">
+        
+        <h4 class="font-bold text-sm">Description</h4>
+        When feature “title” is perturbed with the transformation “Switch countries from high- to low-income and vice versa”, the model changes its prediction in 65.36% of the cases. We expected the predictions not to be affected by this transformation.
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Examples</h4>
+        <div class="text-white text-sm overflow-scroll">
+            <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>Switch countries from high- to low-income and vice versa(title)</th>
+      <th>Original prediction</th>
+      <th>Prediction after perturbation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>728452</th>
+      <td>110ml T7000 Multifunctional Glue With 502 Super Glue Diy Mobile Phone Creel Epoxy Sealant Super Black Liquid Glue Nail Polish</td>
+      <td>110ml T7000 Multifunctional Glue With 502 Super Glue Diy Mobile Phone Creel Epoxy Sealant Super Black Liquid Glue Nail Pakistani</td>
+      <td>16.606148</td>
+      <td>20.228149</td>
+    </tr>
+    <tr>
+      <th>413398</th>
+      <td>Anniyo Tunisie Map &amp; Cities Name Pendant Necklace Chains Gold Color/Silver Color Tunisienne Jewelry Tunisia Women Girl #214321</td>
+      <td>Anniyo Tunisie Map &amp; Cities Name Pendant Necklace Chains Gold Color/Silver Color Tunisienne Jewelry U.K. Women Girl #214321</td>
+      <td>22.138298</td>
+      <td>17.775734</td>
+    </tr>
+    <tr>
+      <th>211770</th>
+      <td>Q6 Lace Toupee Men Europe Human Hair Male Wig Swiss Lace Front Wig With Pu Men Hair Replacement System Unit Man Wig Natural Hair</td>
+      <td>Q6 Lace Toupee Men Europe Human Hair Male Wig Beninese Lace Front Wig With Pu Men Hair Replacement System Unit Man Wig Natural Hair</td>
+      <td>328.156158</td>
+      <td>363.771301</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+        </div>
+        
+
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:ethics:E0101
+        </span>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:performance:P0201
+        </span>
+        
+        
+    </td>
+</tr>
+        </tbody>
+        
+        <tbody class="first:border-t border-b border-zinc-500">
+            <tr class="gsk-issue text-sm group peer text-left cursor-pointer hover:bg-zinc-700">
+    
+    <td class="p-3">
+        
+        <span class="mono text-blue-300">
+            Feature `title`
+        </span>
+        
+        
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Switch Gender</span>
+    </td>
+    
+
+    
+    <td class="p-3">
+        <span>Fail rate = 0.646</span>
+        
+    </td>
+    
+    
+    <td class="p-3">        
+        <span class="text-red-400">
+            646/1000 tested samples (64.6%) changed prediction after perturbation
+        </span>
+    </td>
+    
+    
+    <td class="p-3">
+        <span class="text-gray-400">
+            1000 samples affected<br>
+            (8.7% of dataset)
+        </span>
+        
+    <td class="p-3 text-xs text-right space-x-1">
+        <a href="#"
+            class="gsk-issue-detail-btn inline-block group-[.open]:hidden border border-zinc-100/50 text-zinc-100/90 hover:bg-zinc-500 hover:border-zinc-500 hover:text-white px-2 py-0.5 rounded-sm">Show details</a>
+        <a href="#"
+            class="hidden group-[.open]:inline-block gsk-issue-detail-btn border border-zinc-500 text-zinc-100/90 bg-zinc-500 hover:bg-zinc-400 hover:text-white px-2 py-0.5 rounded-sm">Hide details</a>
+    </td>
+</tr>
+<tr class="gsk-issue-detail text-left hidden  peer-[.open]:table-row border-b border-zinc-500 bg-zinc-700">
+    <td colspan="1000" class="p-3">
+        
+        <h4 class="font-bold text-sm">Description</h4>
+        When feature “title” is perturbed with the transformation “Switch Gender”, the model changes its prediction in 64.6% of the cases. We expected the predictions not to be affected by this transformation.
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Examples</h4>
+        <div class="text-white text-sm overflow-scroll">
+            <div>
+<style scoped>
+    .dataframe tbody tr th:only-of-type {
+        vertical-align: middle;
+    }
+
+    .dataframe tbody tr th {
+        vertical-align: top;
+    }
+
+    .dataframe thead th {
+        text-align: right;
+    }
+</style>
+<table border="1" class="dataframe">
+  <thead>
+    <tr style="text-align: right;">
+      <th></th>
+      <th>title</th>
+      <th>Switch Gender(title)</th>
+      <th>Original prediction</th>
+      <th>Prediction after perturbation</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <th>328297</th>
+      <td>Hamrolte Power Adapter Extension Cable 5M/10M 5.5 * 2.1mm Male Female Power Cord Extend Wire Cable For CCTV network IP Camera</td>
+      <td>Hamrolte Power Adapter Extension Cable 5M/10M 5.5 * 2.1mm female male Power Cord Extend Wire Cable For CCTV network IP Camera</td>
+      <td>19.636902</td>
+      <td>22.110878</td>
+    </tr>
+    <tr>
+      <th>312570</th>
+      <td>1:10 Mini Alloy Bicycle Diecast Model Finger Mountain Miniature Metal Bike Racing Toy Simulation Collection Toys for children</td>
+      <td>1:10 Mini Alloy Bicycle Diecast mannequin Finger Mountain Miniature Metal Bike Racing Toy Simulation Collection Toys for children</td>
+      <td>21.732716</td>
+      <td>20.626995</td>
+    </tr>
+    <tr>
+      <th>241445</th>
+      <td>2Pcs Plus Size Cotton Panties for Woman Breathable High Waist Briefs Comfortable Solid Color Underwear Soft Underpants M-XXXL</td>
+      <td>2Pcs Plus Size Cotton Panties for man Breathable High Waist Briefs Comfortable Solid Color Underwear Soft Underpants M-XXXL</td>
+      <td>38.625103</td>
+      <td>34.551888</td>
+    </tr>
+  </tbody>
+</table>
+</div>
+        </div>
+        
+
+        
+
+        
+        <h4 class="font-bold text-sm mt-4">Taxonomy</h4>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:ethics:E0101
+        </span>
+        
+        <span class="inline-block bg-blue-300/25 text-zinc-100 px-2 py-0.5 rounded-sm text-sm mr-1 my-2">
+            avid-effect:performance:P0201
         </span>
         
         

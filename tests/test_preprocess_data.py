@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 import torch
 from transformers import RobertaModel
-from data import preprocess_data
+from src.data import preprocess_data
 
 # Mock configuration class to simulate the expected 'cfg' structure
 class MockConfig:

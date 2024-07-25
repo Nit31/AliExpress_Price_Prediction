@@ -1,7 +1,7 @@
 import os
 import pytest
 import pandas as pd
-from data import read_datastore
+from src.data import read_datastore
 
 def test_read_datastore():
     """

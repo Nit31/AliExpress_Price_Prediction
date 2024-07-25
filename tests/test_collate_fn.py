@@ -1,8 +1,7 @@
 import pytest
 import torch
 from transformers import RobertaTokenizer
-
-from data import collate_fn
+from src.data import collate_fn
 
 def test_collate_fn():
     """

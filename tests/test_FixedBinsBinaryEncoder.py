@@ -3,7 +3,7 @@ import pytest
 from unittest.mock import patch
 from sklearn.base import BaseEstimator, TransformerMixin
 from category_encoders.binary import BinaryEncoder 
-from data import FixedBinsBinaryEncoder
+from src.data import FixedBinsBinaryEncoder
 
 # Mock BinaryEncoder to test FixedBinsBinaryEncoder
 class MockBinaryEncoder:

@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from unittest.mock import patch, MagicMock
-from data import load_features
+from src.data import load_features
 
 # Sample DataFrames for testing
 @pytest.fixture

@@ -84,3 +84,14 @@ mlflow run . --env-manager=local -e entry_point
         - model.pth
         - pickle_module_info.txt
 - Run scripts/run_service.sh
+<<<<<<< HEAD
+
+
+
+
+<<<<<<< HEAD
+=======
+- Now you can run `./scripts/test_data` to get a data sample
+>>>>>>> aca200e1e6d3c792bb115d930ae677bd49eb462c
+=======
+>>>>>>> b381c2051c5a99fe143bc26d56ed841569d7d9b0

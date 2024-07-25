@@ -1,0 +1,68 @@
+{
+    "type": "zenml.zen_server.deploy.local.local_zen_server.LocalZenServer",
+    "uuid": "9b7e42d2-cbb7-4962-8328-e98201a9a86a",
+    "admin_state": "active",
+    "config": {
+        "type": "zenml.zen_server.deploy.local.local_zen_server.LocalZenServerConfig",
+        "name": "local",
+        "description": "",
+        "pipeline_name": "",
+        "pipeline_step_name": "",
+        "model_name": "",
+        "model_version": "",
+        "service_name": "zenml-local",
+        "silent_daemon": false,
+        "root_runtime_path": "/home/john/repos/AliExpress_Price_Prediction/services/zenml/zen_server/local",
+        "singleton": true,
+        "blocking": false,
+        "server": {
+            "name": "local",
+            "provider": "local",
+            "port": 8237,
+            "ip_address": "127.0.0.1",
+            "blocking": false,
+            "store": null,
+            "use_legacy_dashboard": false
+        }
+    },
+    "status": {
+        "type": "zenml.services.local.local_service.LocalDaemonServiceStatus",
+        "state": "pending_startup",
+        "last_state": "inactive",
+        "last_error": "",
+        "runtime_path": "/home/john/repos/AliExpress_Price_Prediction/services/zenml/zen_server/local",
+        "silent_daemon": false
+    },
+    "endpoint": {
+        "type": "zenml.services.local.local_service_endpoint.LocalDaemonServiceEndpoint",
+        "admin_state": "inactive",
+        "config": {
+            "type": "zenml.services.local.local_service_endpoint.LocalDaemonServiceEndpointConfig",
+            "name": "LocalDaemonServiceEndpoint",
+            "description": "",
+            "protocol": "http",
+            "port": 8237,
+            "ip_address": "127.0.0.1",
+            "allocate_port": false
+        },
+        "status": {
+            "type": "zenml.services.local.local_service_endpoint.LocalDaemonServiceEndpointStatus",
+            "state": "inactive",
+            "last_state": "inactive",
+            "last_error": "",
+            "protocol": "http",
+            "hostname": "127.0.0.1",
+            "port": 8237
+        },
+        "monitor": {
+            "type": "zenml.services.service_monitor.HTTPEndpointHealthMonitor",
+            "config": {
+                "type": "zenml.services.service_monitor.HTTPEndpointHealthMonitorConfig",
+                "healthcheck_uri_path": "health",
+                "use_head_request": true,
+                "http_status_code": 200,
+                "http_timeout": 5
+            }
+        }
+    }
+}

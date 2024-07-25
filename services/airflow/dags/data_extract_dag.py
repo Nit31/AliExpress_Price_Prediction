@@ -8,14 +8,9 @@ from data import sample_data, handle_initial_data, validate_initial_data
 import warnings
 import subprocess
 from git import Repo
-from hydra.core.global_hydra import GlobalHydra
 
 warnings.filterwarnings
 warnings.filterwarnings("ignore", category=DeprecationWarning)
-
-
-# Define the default arguments
-default_args = {"start_date": datetime(2022, 1, 1, tz="UTC"), "catchup": False}
 
 
 def version_data(cfg, sample):
@@ -24,7 +19,10 @@ def version_data(cfg, sample):
     """
     # Write the sample data to the file
     sample.to_csv(cfg.db.sample_path)
-
+    print(
+        "---------------------------------------------------------------------------------------------"
+    )
+    print(cfg.data_version.version)
     # Save data version
     try:
         with io.open(cfg.dvc.data_version_yaml_path, "w", encoding="utf8") as outfile:
@@ -93,9 +91,17 @@ def load_and_execute_sample_data(**kwargs):
     """
     Extract a new sample of the data
     """
-    # Increment version by 1. Assume that there are only 5 samples
-    cfg.data_version.version = cfg.data_version.version % 5 + 1
+    print(
+        "---------------------------------------------------------------------------------------------"
+    )
+    print("before sample")
+    print(cfg.data_version.version)
     sample = sample_data(cfg)
+    print(
+        "---------------------------------------------------------------------------------------------"
+    )
+    print("after sample")
+    print(cfg.data_version.version)
     # Push the sample to XCom
     kwargs["ti"].xcom_push(key="sample", value=sample)
 
@@ -113,7 +119,11 @@ def load_and_execute_validate_data(**kwargs):
     except Exception:
         sample = handle_initial_data(sample)
     assert validate_initial_data(cfg, sample)
-
+    print(
+        "---------------------------------------------------------------------------------------------"
+    )
+    print("validation")
+    print(cfg.data_version.version)
     # Push the sample to XCom
     kwargs["ti"].xcom_push(key="sample", value=sample)
 
@@ -137,26 +147,31 @@ def load_sample_to_data_store(**kwargs):
 
 # Define the DAG
 with DAG(
-    dag_id="data_extract_dag",
-    schedule="5 * * * *",
-    default_args=default_args,
+    "data_extract_dag",
+    start_date=datetime(2022, 1, 1, tz="UTC"),
+    tags=["data extraction"],
+    catchup=False,
+    schedule="0/5 * * * *",
     description="An automated workflow for data extraction, validation, versioning, and loading",
+    max_active_runs=1,
 ) as dag:
     # Initialize Hydra and load the config
-    # hydra.initialize(config_path="../../../configs", job_name="data_extract_dag")
-    # cfg = hydra.compose(config_name="main")
+    hydra.initialize(config_path="../../../configs", job_name="data_extract_dag")
+    cfg = hydra.compose(config_name="main")
+    # Increment version by 1. Assume that there are only 5 samples
+    cfg.data_version.version = cfg.data_version.version % 5 + 1
 
-    if GlobalHydra.instance().is_initialized():
-        print("Using existing Hydra global instance.")
-        cfg = hydra.compose(config_name="main")
-    else:
-        print("Initializing a new Hydra global instance.")
-        hydra.initialize(
-            config_path="../../../configs",
-            job_name="preprocess_data",
-            version_base=None,
-        )
-        cfg = hydra.compose(config_name="main")
+    # if GlobalHydra.instance().is_initialized():
+    #     print("Using existing Hydra global instance.")
+    #     cfg = hydra.compose(config_name="main")
+    # else:
+    #     print("Initializing a new Hydra global instance.")
+    #     hydra.initialize(
+    #         config_path="../../../configs",
+    #         job_name="preprocess_data",
+    #         version_base=None,
+    #     )
+    #     cfg = hydra.compose(config_name="main")
 
     # Define a PythonOperator to execute the load_and_execute_sample_data function
     extract_sample_task = PythonOperator(

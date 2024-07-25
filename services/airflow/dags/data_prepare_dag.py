@@ -2,16 +2,8 @@ from datetime import timedelta
 from airflow import DAG
 from airflow.operators.python import PythonOperator
 from airflow.sensors.external_task import ExternalTaskSensor
-from airflow.utils.dates import days_ago
-
-# Define DAG arguments
-default_args = {
-    "owner": "airflow",
-    "depends_on_past": False,
-    "retries": 1,
-    "retry_delay": timedelta(minutes=5),
-    "catchup": False,
-}
+import subprocess
+from pendulum import datetime
 
 
 def load_and_execute_data_prepare(**kwargs):
@@ -19,19 +11,18 @@ def load_and_execute_data_prepare(**kwargs):
     Load and execute the data preparation pipeline.
     """
     # FIXME:
-    import subprocess
-
     subprocess.run(["python", "services/airflow/dags/data_prepare.py"], check=True)
 
 
-# Define DAG
+# Define DAG2
 with DAG(
     "data_prepare_dag",
-    default_args=default_args,
     description="DAG for data preparation",
-    schedule="5 * * * *",
-    start_date=days_ago(1),
+    schedule="0/5 * * * *",
+    start_date=datetime(2022, 1, 1, tz="UTC"),
     tags=["data_preparation", "zenml"],
+    catchup=False,
+    max_active_runs=1
 ) as dag:
 
     # External task sensor to wait for data extraction pipeline completion
@@ -53,11 +44,3 @@ with DAG(
 
     # Define dependencies
     wait_for_extraction >> run_zenml_pipeline
-
-    # FIXME:
-    # Optional: Load features to feature store
-    # load_features = PythonOperator(
-    #     task_id='load_features',
-    #     python_callable=load_features_to_feature_store,  # Replace with your feature loading function
-    # )
-    # run_zenml_pipeline >> load_features

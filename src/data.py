@@ -479,9 +479,12 @@ def validate_features(X, y):
 def load_features(X, y, version):
     version = str(version)
     df = pd.concat([X, y], axis=1)
-    zenml.save_artifact(
-        data=df, name="features_target", version=version, tags=[version]
-    )
+    try:
+        zenml.save_artifact(
+            data=df, name="features_target", version=version, tags=[version]
+        )
+    except zenml.exceptions.EntityExistsError:
+        pass
 
     # Specify the name or ID of the artifact you want to load
     artifact_name_or_id = (

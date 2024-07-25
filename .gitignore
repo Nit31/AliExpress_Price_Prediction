@@ -175,3 +175,4 @@ services/gx/great_expectations.yml
 /multirun
 .zen/config.yaml
 services/gx/checkpoints/validator_checkpoint.yml
+/services/zenml/local_stores/c0a51850-13e9-4107-8fb0-762271b0b952/custom_artifacts/roberta_model

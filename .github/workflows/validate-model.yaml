@@ -97,10 +97,10 @@ jobs:
           export PYTHONPATH=$PWD/src
       
       - name: Create confidential.yaml
-      run: |
-        echo "kaggle:" > configs/confidential.yaml
-        echo "  kaggle_username: '${{ secrets.KAGGLE_USERNAME }}'" >> configs/confidential.yaml
-        echo "  kaggle_key: '${{ secrets.KAGGLE_KEY }}'" >> configs/confidential.yaml
+        run: |
+          echo "kaggle:" > configs/confidential.yaml
+          echo "  kaggle_username: '${{ secrets.KAGGLE_USERNAME }}'" >> configs/confidential.yaml
+          echo "  kaggle_key: '${{ secrets.KAGGLE_KEY }}'" >> configs/confidential.yaml
 
       - name: Run MLflow server
         run: |

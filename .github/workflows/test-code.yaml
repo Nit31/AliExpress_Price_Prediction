@@ -108,10 +108,12 @@ jobs:
           export PYTHONPATH=$PWD/src
 
       - name: Run MLflow server
-        run: mlflow server
+        run: |
+          nohup mlflow server > mlflow.log 2>&1 &
 
       - name: Run ZenML server  
-        run: zenml down && zenml up
+        run: |
+          nohup zenml down && zenml up > zenml.log 2>&1 &
         
       # Run pytest on tests folder
       - name: Test with pytest

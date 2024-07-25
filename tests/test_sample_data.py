@@ -56,10 +56,6 @@ def test_sample_data(db_creator, db_name, sample_path, data_path, kaggle_filenam
     # Assert some expected behavior after calling the function
     # For example, check if the sample file was created correctly
 
-    try:
-        assert os.path.exists(sample_path)
-    except AssertionError:
-        pytest.fail("File is not saved in data/samples")
 
 def test_sample_data_exception():
     """

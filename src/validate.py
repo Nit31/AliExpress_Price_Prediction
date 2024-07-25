@@ -117,6 +117,9 @@ def main():
         config_path="../configs", job_name="preprocess_data", version_base=None
     )
     cfg = hydra.compose(config_name="main")
+    
+    # Set the proper data version for test
+    cfg.data_version.version = cfg.experiment.test_data_version
 
     # Get all models with the alias "Challenger"
     models_with_champion_alias = get_models_info_by_alias(client, "champion")

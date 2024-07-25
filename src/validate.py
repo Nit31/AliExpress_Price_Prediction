@@ -1,11 +1,5 @@
 import mlflow
 import hydra
-from data import (
-    sample_data,
-    validate_initial_data,
-    handle_initial_data,
-    preprocess_data,
-)
 import giskard
 import torch
 import zenml
@@ -23,21 +17,15 @@ def get_models_info_by_alias(client, alias):
 
 
 def extract_data(cfg, version):
-    # take a sample
-    sample = sample_data(cfg)
-
-    # update the version of the sample
-    cfg.data_version.version = version
-
-    # validate the sample
     try:
-        # if the validation failed, then try to handle the initial data
-        assert validate_initial_data(cfg, sample)
-    except Exception:
-        sample = handle_initial_data(sample)
-    assert validate_initial_data(cfg, sample)
+        df = zenml.load_artifact(
+            name_or_id="features_target", version=version
+        )
+    except Exception as e:
+        print("Error loading zenml artifacts\n")
+        raise e
 
-    return sample
+    return df
 
 
 def test_model(client, cfg, model_info, giskard_dataset):
@@ -48,9 +36,9 @@ def test_model(client, cfg, model_info, giskard_dataset):
     )
 
     def predict(df):
-        # Preprocess the data
-        X, _ = preprocess_data(df, cfg, skip_target=True)
-
+        X = df
+        if cfg.zenml.features.target in df.columns:
+            X = df.drop(columns=[cfg.zenml.features.target])
         # Predict using the model
         with torch.no_grad():
             output = (
@@ -59,31 +47,21 @@ def test_model(client, cfg, model_info, giskard_dataset):
                 .numpy()
                 .flatten()
             )
-
-        # Load the target preprocessor
-        target_preprocessor = zenml.load_artifact(
-            name_or_id="target_preprocessor", version="1"
-        )
-
-        # Extract the numerical transformer
-        num_transformer = target_preprocessor.transformers_[0][1]
-
-        # Ensure output is a 2D array with shape (n_samples, n_features)
-        # If output is one-dimensional, reshape it to 2D
-        output_reshaped = output.reshape(-1, 1)  # Reshape to 2D if needed
-
-        # Perform the inverse transformation
-        inverse_transformed_output = num_transformer.inverse_transform(output_reshaped)
-
-        return inverse_transformed_output
+        
+        return output.tolist()
 
     # print(predict(giskard_dataset.df.head()))
+    # print(giskard_dataset.df.price.head())
+    # Prepare feature names (excluding target column)
+    feature_names = [col for col in giskard_dataset.df.columns if col != cfg.zenml.features.target]
+
     # Wrap the model
     giskard_model = giskard.Model(
         model=predict,
         model_type="regression",
-        feature_names=giskard_dataset.df.columns,
+        feature_names=feature_names,
     )
+    
     # Create a test suite
     test_suite = giskard.Suite(name=f"test_suite_{model_info.name}")
     test_r2 = giskard.testing.test_r2(
@@ -116,12 +94,13 @@ def main():
     version = cfg.mlflow.test_data_version
     df = extract_data(cfg, version)
 
-    TARGET_COLUMN = cfg.zenml.features.target
-    CATEGORICAL_COLUMNS = list(cfg.zenml.features.categorical)
 
     giskard_dataset = giskard.Dataset(
-        df=df, target=TARGET_COLUMN, cat_columns=CATEGORICAL_COLUMNS
+        df=df,
+        target=cfg.zenml.features.target
     )
+    
+    # X = df.drop(columns=cfg.zenml.features.target)
 
     # Raise exception if there are several champion models or zero
     if len(models_with_champion_alias) > 1:
@@ -130,8 +109,7 @@ def main():
         raise Exception("There should be at least one champion model!")
 
     # Test all the challenger models
-    for model_info in models_with_champion_alias:
-        test_model(client, cfg, model_info, giskard_dataset)
+    test_model(client, cfg, models_with_champion_alias[0], giskard_dataset)
 
 
 if __name__ == "__main__":

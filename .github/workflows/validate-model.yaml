@@ -16,7 +16,6 @@ on:
       - 'configs'
       - '.github'
   pull_request:
-    types: [closed]
     branches:
       - main
     paths:

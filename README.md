@@ -1,4 +1,7 @@
 # AliExpress_Price_Prediction
+![Test code workflow](https://github.com/Nit31/AliExpress_Price_Prediction/actions/workflows/test-code.yaml/badge.svg)
+![Test code workflow](https://github.com/Nit31/AliExpress_Price_Prediction/actions/workflows/validate-model.yaml/badge.svg)
+
  Innopolis University MLOps capstone project. The aim of this project is to apply the CRISP-ML process on a machine learning project which begins with business and data understanding till model deployment and monitoring. The phases of the process are as follows:
 
 1. Business and data understanding
@@ -81,6 +84,7 @@ mlflow run . --env-manager=local -e entry_point
         - model.pth
         - pickle_module_info.txt
 - Run scripts/run_service.sh
+<<<<<<< HEAD
 
 
 
@@ -89,3 +93,5 @@ mlflow run . --env-manager=local -e entry_point
 =======
 - Now you can run `./scripts/test_data` to get a data sample
 >>>>>>> aca200e1e6d3c792bb115d930ae677bd49eb462c
+=======
+>>>>>>> b381c2051c5a99fe143bc26d56ed841569d7d9b0

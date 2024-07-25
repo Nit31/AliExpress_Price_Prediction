@@ -89,7 +89,14 @@ jobs:
         # You do not need to create a virtual environment here, just use the global installation of Python
         # Check if requirements.txt file is there
             
-      
+            
+      - name: Create confidential.yaml
+        run: |
+          echo "kaggle:" > configs/confidential.yaml
+          echo "  kaggle_username: '${{ secrets.KAGGLE_USERNAME }}'" >> configs/confidential.yaml
+          echo "  kaggle_key: '${{ secrets.KAGGLE_KEY }}'" >> configs/confidential.yaml
+
+
       # Task name
       - name: Run your app
       

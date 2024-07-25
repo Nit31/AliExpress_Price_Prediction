@@ -1,0 +1,14 @@
+aliases: []
+creation_timestamp: 1721756930699
+current_stage: None
+description: null
+last_updated_timestamp: 1721756930699
+name: my_model
+run_id: null
+run_link: null
+source: MLOps_recovery/mlruns/452294063850305597/a11fe7218c8742ea9e130a7b148a54a6/artifacts/models/Model_dim[512]_layers[3]_experiment/r2_score0.391447074233853_run1
+status: READY
+status_message: null
+storage_location: MLOps_recovery/mlruns/452294063850305597/a11fe7218c8742ea9e130a7b148a54a6/artifacts/models/Model_dim[512]_layers[3]_experiment/r2_score0.391447074233853_run1
+user_id: null
+version: 1

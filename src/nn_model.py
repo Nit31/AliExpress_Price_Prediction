@@ -72,9 +72,13 @@ class PyTorchRegressor(BaseEstimator, RegressorMixin):
         if hasattr(optim, self.optimizer):
             optimizer_class = getattr(optim, self.optimizer)
             if self.optimizer == "SGD":
-                self.optimizer_ = optimizer_class(self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=1e-4)
+                self.optimizer_ = optimizer_class(
+                    self.model.parameters(), lr=self.lr, momentum=0.9, weight_decay=1e-4
+                )
             elif self.optimizer == "RMSprop":
-                self.optimizer_ = optimizer_class(self.model.parameters(), lr=self.lr, alpha=0.99, eps=1e-8)
+                self.optimizer_ = optimizer_class(
+                    self.model.parameters(), lr=self.lr, alpha=0.99, eps=1e-8
+                )
             else:
                 self.optimizer_ = optimizer_class(self.model.parameters(), lr=self.lr)
         else:

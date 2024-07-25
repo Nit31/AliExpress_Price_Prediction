@@ -75,7 +75,7 @@ def test_model(client, cfg, model_info, giskard_dataset):
         # Perform the inverse transformation
         inverse_transformed_output = num_transformer.inverse_transform(output_reshaped)
 
-        return inverse_transformed_output
+        return inverse_transformed_output.flatten().tolist()
 
     # print(predict(giskard_dataset.df.head()))
     # Wrap the model

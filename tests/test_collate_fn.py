@@ -2,11 +2,12 @@ import pytest
 import torch
 from transformers import RobertaTokenizer
 
-from data import collate_fn  # Replace 'your_module' with the actual module
+from data import collate_fn
 
 def test_collate_fn():
     """
     Test that the collate_fn function correctly tokenizes a batch of text and returns a PyTorch tensor.
+
     """
     tokenizer = RobertaTokenizer.from_pretrained('roberta-base')
 

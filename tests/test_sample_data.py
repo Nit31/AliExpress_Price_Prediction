@@ -18,6 +18,19 @@ testdata = [
 
 @pytest.mark.parametrize("db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path, data_version, seed", testdata)
 def test_sample_data(db_creator, db_name, sample_path, data_path, kaggle_filename, data_version_yaml_path, data_version, seed):
+    """
+    Mock the hydra config
+
+    Args:
+        db_creator (_type_): _description_
+        db_name (_type_): _description_
+        sample_path (_type_): _description_
+        data_path (_type_): _description_
+        kaggle_filename (_type_): _description_
+        data_version_yaml_path (_type_): _description_
+        data_version (_type_): _description_
+        seed (_type_): _description_
+    """
     cfg = types.SimpleNamespace(
         db = types.SimpleNamespace(
             db_creator = db_creator,
@@ -49,6 +62,9 @@ def test_sample_data(db_creator, db_name, sample_path, data_path, kaggle_filenam
         pytest.fail("File is not saved in data/samples")
 
 def test_sample_data_exception():
+    """
+    Test sample_data fucntion for exception
+    """
     with pytest.raises(Exception):
         cfg = {
             "db": {

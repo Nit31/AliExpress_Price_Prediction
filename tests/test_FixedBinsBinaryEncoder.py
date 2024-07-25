@@ -22,11 +22,21 @@ class MockBinaryEncoder:
 # Replace BinaryEncoder with MockBinaryEncoder for testing
 @pytest.fixture
 def fixed_bins_binary_encoder():
+    """
+    Fixture for FixedBinsBinaryEncoder with a mocked BinaryEncoder.
+
+    """
     with patch('category_encoders.binary.BinaryEncoder', MockBinaryEncoder):
         yield FixedBinsBinaryEncoder(max_bins=4)  # Example with max_bins set to 4
 
 
 def test_fit(fixed_bins_binary_encoder):
+    """
+    Test fit method of encoder
+
+    Args:
+        fixed_bins_binary_encoder (FixedBinsBinaryEncoder): fixture of FixedBinsBinaryEncoder
+    """
     # Test that fit does not raise any exceptions
     X = np.array(['a', 'b', 'c'])
     encoder = fixed_bins_binary_encoder.fit(X)
@@ -34,6 +44,11 @@ def test_fit(fixed_bins_binary_encoder):
 
 
 def test_transform(fixed_bins_binary_encoder):
+    """
+    Test transform method of encoder
+    Args:
+        fixed_bins_binary_encoder (FixedBinsBinaryEncoder): fixture of FixedBinsBinaryEncoder
+    """
     # Test that transform works correctly when within max_bins
     X = np.array(['a', 'b', 'c'])
     transformed = fixed_bins_binary_encoder.fit_transform(X)
@@ -42,6 +57,11 @@ def test_transform(fixed_bins_binary_encoder):
 
     
 def test_transform_exceeds_max_bins(fixed_bins_binary_encoder):
+    """
+    Specially exceed maxbins to test function in error case
+    Args:
+        fixed_bins_binary_encoder (FixedBinsBinaryEncoder): fixture of FixedBinsBinaryEncoder
+    """
     # Test that transform raises ValueError when exceeding max_bins
     fixed_bins_binary_encoder.max_bins = 2  # Set max_bins lower
     X = np.array(['a', 'b', 'c', 'd'])  # This should create more than 2 bits

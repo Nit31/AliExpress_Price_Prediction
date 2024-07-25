@@ -25,3 +25,6 @@ To use the Flask API, you can send a POST request to the `/predict` endpoint wit
 ```
 
 The API will return a JSON response with the predicted values.
+
+## Docker server
+To build, run & push the docker image, run the deploy entry point from the project directory `mlflow run . --env-manager=local -e deploy`

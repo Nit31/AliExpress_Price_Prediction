@@ -1,7 +1,7 @@
 import pytest
 import pandas as pd
 from unittest.mock import patch, MagicMock
-from data import load_features  # Replace with the actual module name
+from data import load_features
 
 # Sample DataFrames for testing
 @pytest.fixture
@@ -14,6 +14,13 @@ def sample_data():
 @patch('zenml.save_artifact')  # Replace with the actual import path for zenml
 @patch('zenml.load_artifact')  # Replace with the actual import path for zenml
 def test_load_features(mock_load_artifact, mock_save_artifact, sample_data):
+    """
+    Test load features 
+    Args:
+        mock_load_artifact (_type_): Mocked function
+        mock_save_artifact (_type_): Mocked function
+        sample_data (_type_): Fixture of dataset
+    """
     X, y = sample_data
     version = 1
 
@@ -37,6 +44,11 @@ def test_load_features(mock_load_artifact, mock_save_artifact, sample_data):
     assert mock_load_artifact.call_args[1]['version'] == str(version)
 
 def test_load_features_artifact_not_loaded(sample_data):
+    """
+    Test load features 
+    Args:
+        sample_data (_type_): Fixture of dataset
+    """
     X, y = sample_data
     version = 1
 

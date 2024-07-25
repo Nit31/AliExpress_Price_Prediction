@@ -7,12 +7,16 @@ name: Aliexpress_Price_Prediction
 entry_points:
   main:
     command: "python src/main.py --multirun"
+
   validate:
     command: "python src/validate.py"
+
   transform:
     command: "python pipelines/data_prepare.py"
+
   extract:
     command: "airflow dags test data_extract_dag"
+
   evaluate:
     parameters:
       version: 
@@ -22,6 +26,7 @@ entry_points:
         type: str
         default: 'champion'
     command: "python src/evaluate.py --version {version} --alias {alias}"
+
   predict:
     parameters:
       example_version: 
@@ -34,3 +39,6 @@ entry_points:
         type: int
         default: 42
     command: "python src/predict.py --example_version {example_version} --port {port} --random_state {random_state}"
+  
+  deploy:
+    command: "sh scripts/deploy_docker.sh"

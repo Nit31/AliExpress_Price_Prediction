@@ -2,6 +2,8 @@ import pandas as pd
 import pytest
 from data import TextDataset
 
+# Test each method of the class
+
 def test_text_dataset_length():
     """Tests the length of the TextDataset."""
     text_series = pd.Series(["This is a test.", "Another test data."])

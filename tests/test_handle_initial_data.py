@@ -18,6 +18,11 @@ def sample():
     return sample_df
 
 def test_handle_initial_data(sample):
+    """
+    Test functionon sample 
+    Args:
+        sample (pandas.Dataframe): Input sample
+    """
     cleaned_df = handle_initial_data(sample)
 
     # Check for duplicates in 'id'

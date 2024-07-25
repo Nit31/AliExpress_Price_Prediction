@@ -7,7 +7,7 @@ from sklearn.preprocessing import StandardScaler, OneHotEncoder
 from sklearn.compose import ColumnTransformer
 import torch
 from transformers import RobertaModel
-from data import preprocess_data  # Replace with the actual module name
+from data import preprocess_data
 
 # Mock configuration class to simulate the expected 'cfg' structure
 class MockConfig:
@@ -38,6 +38,12 @@ def mock_generate_embeddings(titles, model, device):
 
 # Tests for preprocess_data function
 def test_preprocess_data_with_target(sample_df):
+    """
+    Test preprocessing of the data
+
+    Args:
+        sample_df (pandas.Dataframe): Sample df
+    """
     cfg = MockConfig()
     global generate_embeddings
     generate_embeddings = mock_generate_embeddings  # Substitute the actual function with the mock

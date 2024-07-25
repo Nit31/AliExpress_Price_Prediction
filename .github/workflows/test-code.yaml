@@ -4,19 +4,30 @@
 name: Testing code
 
 # Trigger when?
-on: # Event
-  push: # this will trigger the workflow/pipeline only if there is push on `main` branch
+on:
+  push:
     branches:
       - main
-    paths: # the push should be specifically to the folders `src` or `scripts` to trigger this workflow, otherwise, the workflow will not be triggered
+    paths:
       - 'src'
       - 'scripts'
       - 'services/airflow/dags'
       - 'tests'
       - 'configs'
       - '.github'
-      
-      
+  pull_request:
+    types: [closed]
+    branches:
+      - main
+    paths:
+      - 'src'
+      - 'scripts'
+      - 'services/airflow/dags'
+      - 'tests'
+      - 'configs'
+      - '.github'
+  workflow_dispatch: # Allows manual trigger from the GitHub UI
+
 
 # Allows to only read the contents of the repository
 # `contents: read` permits an action to list the commits
@@ -97,11 +108,13 @@ jobs:
           export PYTHONPATH=$PWD/src
 
       - name: Run MLflow server
-        run: mlflow server
+        run: |
+          nohup mlflow server > mlflow.log 2>&1 &
 
       - name: Run ZenML server  
-        run: zenml down && zenml up
+        run: |
+          nohup zenml down && zenml up > zenml.log 2>&1 &
         
       # Run pytest on tests folder
       - name: Test with pytest
-        run: pytest tests
+        run: pytest

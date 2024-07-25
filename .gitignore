@@ -174,3 +174,4 @@ services/gx/checkpoints/validator_checkpoint.yml
 services/gx/great_expectations.yml
 /multirun
 .zen/config.yaml
+services/gx/checkpoints/validator_checkpoint.yml

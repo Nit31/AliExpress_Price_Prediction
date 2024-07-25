@@ -402,7 +402,7 @@ def preprocess_data(df: pd.DataFrame, cfg=None, skip_target=False):
         target_preprocessor = target_preprocessor.fit(y)
         
         # Save the target preprocessor
-        joblib.dump(preprocessor, "preprocessors/target_preprocessor.pkl")
+        joblib.dump(target_preprocessor, "preprocessors/target_preprocessor.pkl")
         zenml.save_artifact(
             target_preprocessor, name="target_preprocessor", version="1"
         )

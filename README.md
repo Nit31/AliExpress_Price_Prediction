@@ -1,5 +1,36 @@
 # AliExpress_Price_Prediction
- Innopolis University MLOps capstone project
+ Innopolis University MLOps capstone project. The aim of this project is to apply the CRISP-ML process on a machine learning project which begins with business and data understanding till model deployment and monitoring. The phases of the process are as follows:
+
+1. Business and data understanding
+    - Elicit the project requirements and formulate business problem
+    - Specify business goals and machine learning goals
+    - Determine the success criteria for business and machine learning modeling
+    - Analyse the risks and set mitigation approaches
+2. Data engineering/Preparation
+    - Create ETL pipelines using Apache Airflow
+    - Perform data transformation
+    - Check the quality of the data and perform data cleaning
+    - Create ML-ready features and store them in feature stores such as feast
+3. Model engineering
+    - Select and build ML models
+    - Perform and track experiments using MLflow
+    - Optimize models and select best models
+    model versioning in model registry of MLflow
+4. Model validation
+    - Prepare one model for production
+    - Check the success criteria of machine learning
+    - Check the business and machine learning modeling objectives
+    - The business stakeholders take part in this phase
+    - Check if deploying the model is feasible
+    - Check the quality of the model for production
+    - Select one model to be deployed
+5. Model deployment
+    - Search for options available to serve the model
+    - Deploy the model
+    - Create a REST endpoint for your model prediction using Flask or FastAPI
+    - Create a UI for your model using streamlit or pure HTML and JS.
+    - Create a CI/CD pipeline for your model using Github Actions and Docker
+
 ### Requirements
 - Python 3.11
 ### Configuration

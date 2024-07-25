@@ -95,6 +95,12 @@ jobs:
           export PROJECTPATH=$PWD
           export AIRFLOW_HOME=$PWD/services/airflow
           export PYTHONPATH=$PWD/src
+      
+      - name: Create confidentials.yaml
+      run: |
+        echo "kaggle:" > configs/confidentials.yaml
+        echo "  kaggle_username: '${{ secrets.KAGGLE_USERNAME }}'" >> configs/confidentials.yaml
+        echo "  kaggle_key: '${{ secrets.KAGGLE_KEY }}'" >> configs/confidentials.yaml
 
       - name: Run MLflow server
         run: |
